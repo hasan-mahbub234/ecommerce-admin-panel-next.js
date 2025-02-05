@@ -2,6 +2,7 @@
 export default {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./utils/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
@@ -10,6 +11,13 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+      },
+      fontFamily: {
+        "open-sans": "Open+Sans",
+        montserrat: "Montserrat",
+        lato: "Lato",
+        roboto: "Roboto",
+        poppins: "Poppins",
       },
     },
   },

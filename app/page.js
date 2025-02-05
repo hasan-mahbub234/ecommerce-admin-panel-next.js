@@ -1,101 +1,143 @@
-import Image from "next/image";
+"use client";
+import { SocialMedia } from "@/constants/AllConstants";
+import DataTable from "@/utils/DataTable";
+import Heading from "@/utils/Heading";
+import ImageInput from "@/utils/ImageInput";
+import Input from "@/utils/Input";
+import SelectInput from "@/utils/SelectInput";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [name, setName] = useState("Kidos");
+  const [slug, setSlug] = useState("kidos-online-shop");
+  // Social Media States
+  const [socialData, setSocialData] = useState([]);
+  const [selectedMedia, setSelectedMedia] = useState("");
+  const [link, setLink] = useState("");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Handle Adding Social Media
+  const handleAddSocialMedia = () => {
+    if (!selectedMedia || !link) return;
+
+    const mediaExists = socialData.some(
+      (item) => item.name === selectedMedia.name
+    );
+    if (!mediaExists) {
+      const newMedia = SocialMedia.find(
+        (item) => item.name === selectedMedia.name
+      );
+      if (newMedia) {
+        setSocialData([
+          ...socialData,
+          { media: newMedia.icon(), name: newMedia.name, link },
+        ]);
+      }
+    }
+
+    // Reset Fields
+    setSelectedMedia("");
+    setLink("");
+  };
+
+  // Social Media Table Columns
+  const socialColumns = [
+    {
+      key: "media",
+      label: "Media",
+      render: (row) => (
+        <div className="flex items-center">
+          {row.media}{" "}
+          {/* This is already an icon function, so we call it directly */}
+          <span className="ml-2">{row.name}</span>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      ),
+    },
+    { key: "link", label: "Link" },
+  ];
+  return (
+    <div className="ml-[250px] mt-8 px-10">
+      <Heading title={"Website Settings"} />
+      <div className="flex flex-row items-center w-full">
+        <Input
+          label={"Name"}
+          placeholder={"website"}
+          value={name}
+          change={setName}
+          type={"text"}
+        />
+        <Input
+          label={"Slug"}
+          placeholder={"website"}
+          value={slug}
+          change={setSlug}
+          type={"text"}
+        />
+      </div>
+      <div className="flex flex-row items-center w-full">
+        <ImageInput label={"Logo"} />
+        <ImageInput label={"Favicon"} />
+      </div>
+      <div>
+        <p className="font-poppins font-[500] text-[16px] my-2">Social Media</p>
+        {/* Social Media Add Form */}
+        <div className="flex flex-row items-center mb-4">
+          <SelectInput
+            // label="Select Social Media"
+            placeholder="Select Social Media"
+            value={selectedMedia}
+            change={setSelectedMedia}
+            dropdownOptions={SocialMedia}
+            renderOption={(option) => (
+              <div className="flex items-center">
+                {option.icon()}
+                <span className="text-gray-700">{option.name}</span>
+              </div>
+            )}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+          {/* <select
+            value={selectedMedia}
+            onChange={(e) => setSelectedMedia(e.target.value)}
+            className="border-[2px] border-gray-400 rounded-[3px] h-[40px] px-3 placeholder:text-gray-300 text-gray-600 font-lato text-[14px] w-[500px] bg-white mr-2"
+          >
+            <option value="" className=" my-2">
+              <p className="font-lato text-[14px]">Select Social Media</p>
+            </option>
+            {SocialMedia.map((item) => (
+              <option
+                key={item.name}
+                value={item.name}
+                className=" my-2 flex flex-row items-center"
+              >
+                {item.icon()}
+                <p className="font-lato text-[14px]">{item.name}</p>
+              </option>
+            ))}
+          </select> */}
+          <Input
+            placeholder={"Enter link"}
+            value={link}
+            change={setLink}
+            type={"text"}
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          {/* <input
+            type="text"
+            placeholder="Enter link"
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            className="border-[2px] border-gray-400 rounded-[3px] py-2 px-3 placeholder:text-gray-300 text-gray-600 font-lato text-[14px] w-[500px] mr-2"
+          /> */}
+
+          <button
+            onClick={handleAddSocialMedia}
+            className="bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            Add
+          </button>
+        </div>
+
+        {/* Render DataTable for Social Media */}
+        <DataTable data={socialData} columns={socialColumns} />
+      </div>
     </div>
   );
 }
