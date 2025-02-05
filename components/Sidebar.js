@@ -12,7 +12,7 @@ function Sidebar() {
       {/* Heading */}
       <div className="flex flex-row items-center justify-between px-3 py-3 bg-slate-700">
         <h2 className="text-yellow-400 font-poppins font-semibold text-[18px] uppercase">
-          Admin panel
+          Dashboard
         </h2>
 
         {/* Profile Image Container */}
