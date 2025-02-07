@@ -15,7 +15,7 @@ function Sidebar() {
           Admin Panel
         </h2>
 
-        {/* Profile Image Container */}
+        {/* Profile Image Container  */}
         <div
           className="relative"
           onMouseEnter={() => setShowProfileDropdown(true)}
