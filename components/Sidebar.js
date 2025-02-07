@@ -27,11 +27,10 @@ function Sidebar() {
           />
           {showProfileDropdown && (
             <div className="absolute right-0 top-[25px] mt-2 bg-white text-black shadow-md rounded-sm w-[100px]">
-              <Link
-                href="/account"
-              >
-                <p  className="border-b border-b-gray-100 font-lato text-[13px] py-2 px-3 cursor-pointer hover:bg-gray-100 ">Account</p>
-                
+              <Link href="/account">
+                <p className="border-b border-b-gray-100 font-lato text-[13px] py-2 px-3 cursor-pointer hover:bg-gray-100 ">
+                  Account
+                </p>
               </Link>
               <p className="font-lato text-[13px] py-2 px-3 cursor-pointer hover:bg-gray-100">
                 Logout
