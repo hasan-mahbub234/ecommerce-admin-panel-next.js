@@ -16,7 +16,7 @@ function SelectInput({
   console.log(value);
 
   return (
-    <div className={`my-2 w-full ${style || ""}`}>
+    <div className={`my-2 ${style && style}`}>
       {label && (
         <p
           className="font-poppins font-[500] text-[16px] my-2"

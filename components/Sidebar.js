@@ -12,7 +12,7 @@ function Sidebar() {
       {/* Heading */}
       <div className="flex flex-row items-center justify-between px-3 py-3 bg-slate-700">
         <h2 className="text-yellow-400 font-poppins font-semibold text-[18px] uppercase">
-          Dashboard
+          Admin Panel
         </h2>
 
         {/* Profile Image Container */}
@@ -29,9 +29,9 @@ function Sidebar() {
             <div className="absolute right-0 top-[25px] mt-2 bg-white text-black shadow-md rounded-sm w-[100px]">
               <Link
                 href="/account"
-                className="border-b border-b-gray-100 font-lato text-[13px] py-2 px-3 cursor-pointer hover:bg-gray-100"
               >
-                Account
+                <p  className="border-b border-b-gray-100 font-lato text-[13px] py-2 px-3 cursor-pointer hover:bg-gray-100 ">Account</p>
+                
               </Link>
               <p className="font-lato text-[13px] py-2 px-3 cursor-pointer hover:bg-gray-100">
                 Logout

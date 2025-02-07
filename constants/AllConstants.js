@@ -10,6 +10,11 @@ export const SidebarMenu = [
     icon: () => <i className="fa-solid fa-shop text-[18px] w-[20px]"></i>,
   },
   {
+    name: "Sub categories",
+    link: "/subcategories",
+    icon: () => <i className="fa-solid fa-list-check text-[18px] w-[20px]"></i>,
+  },
+  {
     name: "Categories",
     link: "/categories",
     icon: () => <i className="fa-solid fa-shapes text-[18px] w-[20px]"></i>,

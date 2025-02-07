@@ -26,7 +26,7 @@ function DataTable({ data, columns }) {
                 {columns.map((column, colIndex) => (
                   <td
                     key={colIndex}
-                    className="border border-gray-400 px-4 py-2"
+                    className="border border-gray-400 px-4 py-2 text-[14px] font-roboto font-[500]"
                   >
                     {column.render
                       ? column.render(row) // 🔥 Call render function if available

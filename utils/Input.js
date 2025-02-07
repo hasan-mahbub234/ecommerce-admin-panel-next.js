@@ -11,7 +11,7 @@ function Input({
   type,
 }) {
   return (
-    <div className={`my-2 w-full ${style && style}`}>
+    <div className={`my-2 ${style && style}`}>
       {label && (
         <p
           className="font-poppins font-[500] text-[16px] my-2"

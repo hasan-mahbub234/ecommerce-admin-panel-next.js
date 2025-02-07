@@ -1,5 +1,6 @@
 "use client";
 import { SocialMedia } from "@/constants/AllConstants";
+import Button from "@/utils/Button";
 import DataTable from "@/utils/DataTable";
 import Heading from "@/utils/Heading";
 import ImageInput from "@/utils/ImageInput";
@@ -59,6 +60,7 @@ export default function Home() {
       <Heading title={"Website Settings"} />
       <div className="flex flex-row items-center w-full">
         <Input
+        style={'mr-3'}
           label={"Name"}
           placeholder={"website"}
           value={name}
@@ -80,13 +82,14 @@ export default function Home() {
       <div>
         <p className="font-poppins font-[500] text-[16px] my-2">Social Media</p>
         {/* Social Media Add Form */}
-        <div className="flex flex-row items-center mb-4">
+        <div className="flex flex-row items-center justify-start mb-4">
           <SelectInput
             // label="Select Social Media"
             placeholder="Select Social Media"
             value={selectedMedia}
             change={setSelectedMedia}
             dropdownOptions={SocialMedia}
+            style={'mr-3'}
             renderOption={(option) => (
               <div className="flex items-center">
                 {option.icon()}
@@ -94,45 +97,18 @@ export default function Home() {
               </div>
             )}
           />
-          {/* <select
-            value={selectedMedia}
-            onChange={(e) => setSelectedMedia(e.target.value)}
-            className="border-[2px] border-gray-400 rounded-[3px] h-[40px] px-3 placeholder:text-gray-300 text-gray-600 font-lato text-[14px] w-[500px] bg-white mr-2"
-          >
-            <option value="" className=" my-2">
-              <p className="font-lato text-[14px]">Select Social Media</p>
-            </option>
-            {SocialMedia.map((item) => (
-              <option
-                key={item.name}
-                value={item.name}
-                className=" my-2 flex flex-row items-center"
-              >
-                {item.icon()}
-                <p className="font-lato text-[14px]">{item.name}</p>
-              </option>
-            ))}
-          </select> */}
           <Input
             placeholder={"Enter link"}
             value={link}
             change={setLink}
             type={"text"}
+            style={'mr-3'}
           />
-          {/* <input
-            type="text"
-            placeholder="Enter link"
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
-            className="border-[2px] border-gray-400 rounded-[3px] py-2 px-3 placeholder:text-gray-300 text-gray-600 font-lato text-[14px] w-[500px] mr-2"
-          /> */}
-
-          <button
-            onClick={handleAddSocialMedia}
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            Add
-          </button>
+          <Button
+            change={handleAddSocialMedia}
+            text={'Add'}
+         />
+           
         </div>
 
         {/* Render DataTable for Social Media */}
