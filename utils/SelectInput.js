@@ -35,7 +35,7 @@ function SelectInput({
           <div className="flex flex-row items-center">
             {value.icon && value.icon()}
             <p className={`${value ? "text-gray-600" : "text-gray-600"}`}>
-              {value.name || placeholder}
+              {value.name ? value.name : value || placeholder}
             </p>
           </div>
           <i className="fa-solid fa-chevron-down text-gray-600"></i>
