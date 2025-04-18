@@ -2,12 +2,15 @@
 import React, { useState } from "react";
 
 function ImageInput({ value, change, label, txtstyle, inputstyle }) {
-  const [preview, setPreview] = useState(value);
+  const [preview, setPreview] = useState(
+    value ? `http://127.0.0.1:8000/${value}` : null
+  );
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
+      // console.log(file);
       setPreview(imageUrl);
       change(file); // Pass the file, not the URL
     }

@@ -20,6 +20,16 @@ export const SidebarMenu = [
     icon: () => <i className="fa-solid fa-shapes text-[18px] w-[20px]"></i>,
   },
   {
+    name: "Blogs",
+    link: "/blogs",
+    icon: () => <i className="fa-solid fa-blog text-[18px] w-[20px]"></i>,
+  },
+  {
+    name: "Expert",
+    link: "/expert",
+    icon: () => <i className="fa-solid fa-blog text-[18px] w-[20px]"></i>,
+  },
+  {
     name: "Offers",
     link: "/offers",
     icon: () => <i className="fa-solid fa-gift text-[18px] w-[20px]"></i>,

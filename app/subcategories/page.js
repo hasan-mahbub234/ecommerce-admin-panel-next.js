@@ -22,6 +22,7 @@ export default function SubCategories() {
   const [add, setAdd] = useState(false);
   const [update, setUpdate] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedRows, setSelectedRows] = useState(new Set());
 
   const fetchSubcategories = async () => {
     setLoading(true);
@@ -48,6 +49,20 @@ export default function SubCategories() {
     fetchSubcategories();
   }, []);
 
+  // Handle row deletion
+  const handleDeleteSelectedRows = async () => {
+    try {
+      // Loop through the selected rows and delete each one using the uid
+      for (const rowIndex of selectedRows) {
+        const subcategoryToDelete = subCategories[rowIndex];
+        await handleDeleteSubcategory(subcategoryToDelete.uid); // Call the delete function for each selected row
+      }
+      setSelectedRows(new Set()); // Clear selection after deletion
+    } catch (error) {
+      console.error("Error deleting selected subcategories:", error);
+    }
+  };
+
   const columns = [
     { key: "uid", label: "ID" },
     { key: "name", label: "Name" },
@@ -72,7 +87,10 @@ export default function SubCategories() {
       label: "Action",
       render: (row) => (
         <ActionColumn
-          editFunc={() => setUpdate((prev) => !prev)}
+          editFunc={() => {
+            setSubcategory(row); // Set the selected subcategory data
+            setUpdate(true); // Open the update form
+          }}
           dltFunc={() => handleDeleteSubcategory(row.uid)}
         />
       ),
@@ -97,6 +115,10 @@ export default function SubCategories() {
 
         if (response.ok) {
           setSubCategories([...subCategories, result]);
+          setSubcategory({
+            name: "",
+            image: null,
+          });
           setAdd(false);
           fetchSubcategories();
         }
@@ -121,20 +143,39 @@ export default function SubCategories() {
         </>
       ) : update ? (
         <>
-          <UpdateSubcategory setUpdate={setUpdate} />
+          <UpdateSubcategory
+            setUpdate={setUpdate}
+            subcategory={subcategory}
+            fetchSubcategories={fetchSubcategories}
+          />
         </>
       ) : (
         <>
           <Heading title={"Sub Categories"} />
           <Button
             text={"Add Subcategory"}
-            change={() => setAdd((prev) => !prev)}
+            change={() => {
+              setAdd((prev) => !prev);
+              setSubcategory({
+                name: "",
+                image: null,
+              });
+            }}
           />
           <div className="mt-6">
             {loading ? (
               <p>Loading...</p>
             ) : subCategories ? (
-              <DataTable data={subCategories} columns={columns} />
+              <DataTable
+                data={subCategories}
+                columns={columns}
+                handleDeleteSelectedRows={handleDeleteSelectedRows}
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+                showRowQuantity
+                showPagination
+                showSelectRow
+              />
             ) : null}
           </div>
         </>
