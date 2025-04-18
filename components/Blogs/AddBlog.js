@@ -9,73 +9,81 @@ import React from "react";
 
 function AddBlog({ setAdd, setBlog, blog, handleAdd }) {
   return (
-    <>
-      <div className="flex flex-row items-center">
+    <div className="px-2 sm:px-4">
+      <div className="flex items-center mb-4">
         <BackButton
           change={() => setAdd((prev) => !prev)}
-          style={"mt-[-18px]"}
+          className="mt-[-18px] mr-2"
         />
-        <Heading title={"Add A Blog"} />
+        <Heading title="Add A Blog" />
       </div>
+
       {/* Form */}
-      <div className="">
-        <div className="flex flex-row items-center w-full">
+      <div className="space-y-3 sm:space-y-4">
+        {/* Title and Slug */}
+        <div className="space-y-3 sm:space-y-4">
           <Input
-            style={"mr-3"}
-            type={"text"}
-            label={"Blog title"}
-            placeholder={"Enter blog title"}
+            type="text"
+            label="Blog title"
+            placeholder="Enter blog title"
             value={blog.title}
             change={(value) => setBlog((prev) => ({ ...prev, title: value }))}
+            className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
           />
           <Input
-            type={"text"}
-            label={"Blog slug"}
-            placeholder={"Enter blog slug"}
+            type="text"
+            label="Blog slug"
+            placeholder="Enter blog slug"
             value={blog.slug}
             change={(value) => setBlog((prev) => ({ ...prev, slug: value }))}
+            className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
           />
         </div>
-        <div className="flex flex-row items-start w-full">
-          <div className="mr-3">
-            <Input
-              type={"text"}
-              label={"Author"}
-              placeholder={"Enter author name"}
-              value={blog.author}
-              change={(value) =>
-                setBlog((prev) => ({ ...prev, author: value }))
-              }
-            />
-            <TagInput
-              type={"text"}
-              label={"Blog Keywords"}
-              placeholder={"Enter keywords"}
-              value={blog.keywords}
-              change={(value) => {
-                // console.log("Tags being saved as:", value); // <- Should log ["tag1", "tag2"]
-                setBlog((prev) => ({ ...prev, keywords: value }));
-              }}
-            />
-          </div>
 
-          <TextArea
-            type={"text"}
-            label={"Blog content"}
-            placeholder={"Enter blog content"}
-            value={blog.content}
-            change={(value) => setBlog((prev) => ({ ...prev, content: value }))}
+        {/* Author and Keywords */}
+        <div className="space-y-3 sm:space-y-4">
+          <Input
+            type="text"
+            label="Author"
+            placeholder="Enter author name"
+            value={blog.author}
+            change={(value) => setBlog((prev) => ({ ...prev, author: value }))}
+            className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
+          />
+          <TagInput
+            type="text"
+            label="Blog Keywords"
+            placeholder="Enter keywords"
+            value={blog.keywords}
+            change={(value) =>
+              setBlog((prev) => ({ ...prev, keywords: value }))
+            }
+            className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
           />
         </div>
+
+        {/* Blog Content */}
         <TextArea
-          type={"text"}
-          label={"Blog Summary"}
-          placeholder={"Enter blog summary"}
-          value={blog.summary}
-          inputstyle={{ width: "84%" }}
-          change={(value) => setBlog((prev) => ({ ...prev, summary: value }))}
+          label="Blog content"
+          placeholder="Enter blog content"
+          value={blog.content}
+          change={(value) => setBlog((prev) => ({ ...prev, content: value }))}
+          className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
+          rows={5}
         />
-        <div className="flex flex-wrap gap-4 my-4">
+
+        {/* Blog Summary */}
+        <TextArea
+          label="Blog Summary"
+          placeholder="Enter blog summary"
+          value={blog.summary}
+          change={(value) => setBlog((prev) => ({ ...prev, summary: value }))}
+          className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
+          rows={2}
+        />
+
+        {/* Image Inputs */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {(blog.images.length > 0 ? blog.images : [""]).map((img, index) => (
             <ImageInput
               key={index}
@@ -83,33 +91,33 @@ function AddBlog({ setAdd, setBlog, blog, handleAdd }) {
               value={img}
               change={(value) => {
                 let newImages = [...blog.images];
-
-                // Update or insert
                 if (newImages.length === 0) {
                   newImages.push(value);
                 } else {
                   newImages[index] = value;
                 }
-
-                // Only push placeholder if value is non-empty AND not already at end
-                const shouldAddEmpty =
+                if (
                   value &&
                   index === newImages.length - 1 &&
-                  !newImages.includes("");
-
-                if (shouldAddEmpty) {
-                  newImages.push(""); // show next field
+                  !newImages.includes("")
+                ) {
+                  newImages.push("");
                 }
-
                 setBlog((prev) => ({ ...prev, images: newImages }));
               }}
+              className="w-full max-w-full text-xs sm:text-sm"
             />
           ))}
         </div>
 
-        <Button text={"Add"} change={handleAdd} />
+        {/* Add Button */}
+        <Button
+          text="Add Blog"
+          change={handleAdd}
+          className="w-full sm:w-auto px-3 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm"
+        />
       </div>
-    </>
+    </div>
   );
 }
 

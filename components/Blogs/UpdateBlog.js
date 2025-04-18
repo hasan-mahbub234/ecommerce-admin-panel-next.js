@@ -4,6 +4,7 @@ import Button from "@/utils/Button";
 import Heading from "@/utils/Heading";
 import ImageInput from "@/utils/ImageInput";
 import Input from "@/utils/Input";
+import TextArea from "@/utils/TextArea"; // Import this
 import { BASE_LOCAL_URL } from "@/functions/apiService";
 
 function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
@@ -19,7 +20,7 @@ function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
 
   const handleUpdate = async () => {
     if (!updatedBlog.title) {
-      console.error("title is required");
+      console.error("Title is required");
       return;
     }
 
@@ -67,6 +68,7 @@ function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
         <BackButton change={() => setUpdate(false)} style={"mt-[-18px]"} />
         <Heading title={"Update Blog"} />
       </div>
+
       <div className="mt-4 space-y-4">
         <Input
           type="text"
@@ -86,23 +88,23 @@ function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
             setUpdatedBlog((prev) => ({ ...prev, slug: value }))
           }
         />
-        <Input
-          type="text"
+        <TextArea
           label="Summary"
           placeholder="Enter Blog summary"
           value={updatedBlog.summary}
           change={(value) =>
             setUpdatedBlog((prev) => ({ ...prev, summary: value }))
           }
+          rows={3}
         />
-        <Input
-          type="textarea"
+        <TextArea
           label="Content"
           placeholder="Enter Blog content"
           value={updatedBlog.content}
           change={(value) =>
             setUpdatedBlog((prev) => ({ ...prev, content: value }))
           }
+          rows={6}
         />
         <Input
           type="text"

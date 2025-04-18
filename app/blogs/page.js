@@ -82,14 +82,14 @@ export default function Blog() {
       key: "images",
       label: "Images",
       render: (row) => (
-        <div className="flex flex-row items-center">
+        <div className="flex flex-row items-center flex-wrap">
           {row.images
             ? row.images.map((item, index) => (
                 <img
                   src={`${item.image_url}`}
                   key={index}
                   alt="Subcategory"
-                  className="w-[40px] h-[40px] object-cover rounded-md mx-1"
+                  className="w-[40px] h-[40px] object-cover rounded-md mx-1 my-1"
                 />
               ))
             : "No Image"}
@@ -99,34 +99,87 @@ export default function Blog() {
     {
       key: "created_at",
       label: "Created at",
-      render: (row) => <p>{formatDate(row.created_at)}</p>,
+      render: (row) => (
+        <p className="whitespace-nowrap">{formatDate(row.created_at)}</p>
+      ),
     },
     {
       key: "updated_at",
       label: "Updated at",
-      render: (row) => <p>{formatDate(row.updated_at)}</p>,
+      render: (row) => (
+        <p className="whitespace-nowrap">{formatDate(row.updated_at)}</p>
+      ),
     },
     {
       key: "action",
       label: "Action",
       render: (row) => (
-        <ActionColumn
-          editFunc={() => {
-            setBlog(row); // Set the selected subcategory data
-            setUpdate(true); // Open the update form
-          }}
-          dltFunc={() => handleDeleteBlog(row.uid)}
-        />
+        <div className="flex flex-col space-y-1">
+          <ActionColumn
+            editFunc={() => {
+              setBlog(row); // Set the selected subcategory data
+              setUpdate(true); // Open the update form
+            }}
+            dltFunc={() => handleDeleteBlog(row.uid)}
+          />
+        </div>
       ),
     },
   ];
-  //console.log(blog.images);
+
+  const mobileColumns = [
+    {
+      key: "main_info",
+      label: "Blog Information",
+      render: (row) => (
+        <div className="flex flex-col">
+          <div className="font-semibold">{row.title}</div>
+          <div className="text-sm text-gray-600">By: {row.author}</div>
+          <div className="flex flex-wrap mt-1">
+            {row.images?.map((item, index) => (
+              <img
+                src={`${item.image_url}`}
+                key={index}
+                alt="Blog"
+                className="w-[30px] h-[30px] object-cover rounded-md mr-1 mb-1"
+              />
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "dates_action",
+      label: "Details",
+      render: (row) => (
+        <div className="flex flex-col">
+          <div className="text-sm">
+            <span className="font-medium">Created:</span>{" "}
+            {formatDate(row.created_at)}
+          </div>
+          <div className="text-sm">
+            <span className="font-medium">Updated:</span>{" "}
+            {formatDate(row.updated_at)}
+          </div>
+          <div className="mt-2">
+            <ActionColumn
+              editFunc={() => {
+                setBlog(row);
+                setUpdate(true);
+              }}
+              dltFunc={() => handleDeleteBlog(row.uid)}
+              compact
+            />
+          </div>
+        </div>
+      ),
+    },
+  ];
 
   const handleAddBlog = async () => {
     if (blog.title) {
       const cleanedImages = blog.images.filter((img) => img !== "");
       const cleanedBlog = { ...blog, images: cleanedImages };
-      // console.log(cleanedBlog);
       try {
         const formData = new FormData();
         formData.append("title", cleanedBlog.title);
@@ -135,13 +188,11 @@ export default function Blog() {
         formData.append("content", cleanedBlog.content);
         formData.append("author", cleanedBlog.author);
         formData.append("keywords", cleanedBlog.keywords);
-        // formData.append("images_files", cleanedBlog.images);
         cleanedBlog.images
           .filter((img) => img instanceof File)
           .forEach((file, index) => {
-            formData.append("images_files", file); // or `images[${index}]` depending on API
+            formData.append("images_files", file);
           });
-        //console.log("Form Data", formData);
 
         const response = await axios.post(`${BASE_LOCAL_URL}/blogs`, formData);
         console.log(response);
@@ -165,56 +216,82 @@ export default function Blog() {
   };
 
   return (
-    <div className="ml-[250px] mt-8 px-10">
+    <div className="lg:ml-[250px] mt-8 px-4 sm:px-6 lg:px-10">
       {add ? (
-        <>
+        <div className="w-full max-w-4xl mx-auto">
           <AddBlog
             setAdd={setAdd}
             setBlog={setBlog}
             blog={blog}
             handleAdd={handleAddBlog}
           />
-        </>
+        </div>
       ) : update ? (
-        <>
+        <div className="w-full max-w-4xl mx-auto">
           <UpdateBlog
             setUpdate={setUpdate}
             blog={blog}
-            fetchBlogs={fetchBlogs} // Changed from fetchBlog to fetchBlogs
+            fetchBlogs={fetchBlogs}
           />
-        </>
+        </div>
       ) : (
         <>
-          <Heading title={"Blogs"} />
-          <Button
-            text={"Add Blog"}
-            change={() => {
-              setAdd((prev) => !prev);
-              setBlog({
-                title: "",
-                slug: "",
-                summary: "",
-                content: "",
-                keywords: [],
-                author: "",
-                images: [],
-              });
-            }}
-          />
-          <div className="mt-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <Heading title={"Blogs"} />
+            <Button
+              text={"Add Blog"}
+              change={() => {
+                setAdd((prev) => !prev);
+                setBlog({
+                  title: "",
+                  slug: "",
+                  summary: "",
+                  content: "",
+                  keywords: [],
+                  author: "",
+                  images: [],
+                });
+              }}
+              className="w-full sm:w-auto"
+            />
+          </div>
+
+          <div className="mt-6 overflow-x-auto">
             {loading ? (
               <p>Loading...</p>
             ) : blogs ? (
-              <DataTable
-                data={blogs}
-                columns={columns}
-                handleDeleteSelectedRows={handleDeleteSelectedRows}
-                selectedRows={selectedRows}
-                setSelectedRows={setSelectedRows}
-                showRowQuantity
-                showPagination
-                showSelectRow
-              />
+              <div className="bg-white rounded-lg shadow overflow-hidden">
+                {/* Desktop Table */}
+                <div className="hidden sm:block">
+                  <DataTable
+                    data={blogs}
+                    columns={columns}
+                    handleDeleteSelectedRows={handleDeleteSelectedRows}
+                    selectedRows={selectedRows}
+                    setSelectedRows={setSelectedRows}
+                    showRowQuantity
+                    showPagination
+                    showSelectRow
+                    responsive
+                  />
+                </div>
+
+                {/* Mobile Table */}
+                <div className="sm:hidden">
+                  <DataTable
+                    data={blogs}
+                    columns={mobileColumns}
+                    handleDeleteSelectedRows={handleDeleteSelectedRows}
+                    selectedRows={selectedRows}
+                    setSelectedRows={setSelectedRows}
+                    showRowQuantity
+                    showPagination
+                    showSelectRow
+                    responsive
+                    compact
+                  />
+                </div>
+              </div>
             ) : null}
           </div>
         </>
