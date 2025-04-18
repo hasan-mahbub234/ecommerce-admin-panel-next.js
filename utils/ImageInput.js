@@ -2,9 +2,7 @@
 import React, { useState } from "react";
 
 function ImageInput({ value, change, label, txtstyle, inputstyle }) {
-  const [preview, setPreview] = useState(
-    value ? `http://127.0.0.1:8000/${value}` : null
-  );
+  const [preview, setPreview] = useState(value ? `${value}` : null);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];

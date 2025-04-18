@@ -1,4 +1,5 @@
-import apiService from "./apiService";
+import axios from "axios";
+import apiService, { BASE_LOCAL_URL } from "./apiService";
 
 export const deleteSubcategory = async (id) => {
   try {
@@ -11,52 +12,23 @@ export const deleteSubcategory = async (id) => {
 
 export const deleteBlog = async (id) => {
   try {
-    const response = await apiService(`blogs/${id}`, "DELETE");
-
-    // Handle empty responses (common for DELETE requests)
-    if (response.status === 204) {
-      // No Content
-      return { success: true };
-    }
-
-    // Handle JSON responses
-    try {
-      const data = await response.json();
-      return data;
-    } catch (jsonError) {
-      // Response wasn't JSON - return success if status is 2xx
-      if (response.ok) {
-        return { success: true };
-      }
-      throw new Error("Delete failed");
-    }
+    //const response1 = await apiService(`blogs/${id}`, "DELETE");
+    const response = await axios.delete(`${BASE_LOCAL_URL}/blogs/${id}/`);
+    console.log(response);
+    return response;
   } catch (error) {
     console.error(`Error deleting blog ${id}:`, error);
-    throw error; // Re-throw to let calling code handle it
+    throw error;
+    t;
   }
 };
 
 export const deleteExpert = async (id) => {
   try {
-    const response = await apiService(`experts/${id}`, "DELETE");
-
-    // Handle empty responses (common for DELETE requests)
-    if (response.status === 204) {
-      // No Content
-      return { success: true };
-    }
-
-    // Handle JSON responses
-    try {
-      const data = await response.json();
-      return data;
-    } catch (jsonError) {
-      // Response wasn't JSON - return success if status is 2xx
-      if (response.ok) {
-        return { success: true };
-      }
-      throw new Error("Delete failed");
-    }
+    //  const response = await apiService(`experts/${id}`, "DELETE");
+    const response = await axios.delete(`${BASE_LOCAL_URL}experts/${id}`);
+    console.log(response);
+    return response;
   } catch (error) {
     console.error(`Error deleting Expert ${id}:`, error);
     throw error; // Re-throw to let calling code handle it

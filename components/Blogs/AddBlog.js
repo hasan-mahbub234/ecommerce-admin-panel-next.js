@@ -50,7 +50,7 @@ function AddBlog({ setAdd, setBlog, blog, handleAdd }) {
             change={(value) => setBlog((prev) => ({ ...prev, author: value }))}
             className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
           />
-          <TagInput
+          <Input
             type="text"
             label="Blog Keywords"
             placeholder="Enter keywords"

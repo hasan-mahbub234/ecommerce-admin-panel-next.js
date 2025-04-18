@@ -22,7 +22,7 @@ export default function Blog() {
     slug: "",
     summary: "",
     content: "",
-    keywords: [],
+    keywords: "",
     author: "",
     images: [],
   });
@@ -34,11 +34,13 @@ export default function Blog() {
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_LOCAL_URL}/blogs`);
-      if (!response.ok) throw new Error("Network response was not ok");
-      const text = await response.text();
-      const data = text ? JSON.parse(text) : [];
-      setBlogs(data);
+      const response = await axios.get(`${BASE_LOCAL_URL}/blogs`);
+      // if (!response.ok) throw new Error("Network response was not ok");
+
+      //  const text = await response.text();
+      // const data = text ? JSON.parse(text) : [];
+      console.log(response);
+      setBlogs(response.data);
     } catch (error) {
       console.error("Error fetching blogs:", error);
       setBlogs([]); // Set to empty array on error
@@ -49,13 +51,15 @@ export default function Blog() {
 
   const handleDeleteBlog = async (id) => {
     try {
-      await deleteBlog(id); // Wait for deletion to complete
-      await fetchBlogs(); // Then refresh the list
+      const result = await deleteBlog(id); // Wait for deletion to complete
+      if (result.status === 204) {
+        fetchBlogs();
+      }
+      // Then refresh the list
     } catch (error) {
       console.error("Error deleting blog:", error);
     }
   };
-
   useEffect(() => {
     fetchBlogs();
   }, []);
@@ -206,6 +210,8 @@ export default function Blog() {
             author: "",
             images: [],
           });
+          setAdd(false);
+          fetchBlogs();
         }
       } catch (error) {
         console.error("Error adding blog:", error);

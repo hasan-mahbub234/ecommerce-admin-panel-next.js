@@ -14,9 +14,7 @@ function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
     slug: blog.slug,
     summary: blog.summary,
     content: blog.content,
-    keywords: Array.isArray(blog.keywords)
-      ? blog.keywords
-      : blog.keywords.split(","), // Ensure keywords is an array
+    keywords: blog.keywords, // Ensure keywords is an array
     author: blog.author,
     images: blog.images || [""], // Ensure images is an array with at least one empty string
   });
@@ -33,15 +31,31 @@ function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
       formData.append("slug", updatedBlog.slug);
       formData.append("summary", updatedBlog.summary);
       formData.append("content", updatedBlog.content);
-      formData.append("keywords", updatedBlog.keywords.join(",")); // Join array into string
       formData.append("author", updatedBlog.author);
+      formData.append("keywords", updatedBlog.keywords.join(","));
 
-      // Handle images
-      updatedBlog.images.forEach((file, index) => {
-        if (file && typeof file !== "string") {
-          // Only append if it's a new file
-          formData.append(`images_files`, file);
+      // Separate existing URLs and new files
+      const existingImageUrls = [];
+      const newImageFiles = [];
+
+      updatedBlog.images.forEach((img) => {
+        if (typeof img === "string") {
+          existingImageUrls.push(img); // URL or base64 string
+        } else if (img.image_url) {
+          existingImageUrls.push(img.image_url);
+        } else if (img instanceof File) {
+          newImageFiles.push(img);
         }
+      });
+
+      // Append URLs to be retained
+      existingImageUrls.forEach((url) => {
+        formData.append("existing_images", url); // your backend must handle this
+      });
+
+      // Append new files
+      newImageFiles.forEach((file) => {
+        formData.append("images_files", file);
       });
 
       const response = await fetch(`${BASE_LOCAL_URL}/blogs/${blog.uid}/`, {
@@ -53,8 +67,8 @@ function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
       const result = text ? JSON.parse(text) : {};
 
       if (response.ok) {
-        fetchBlogs();
         setUpdate(false);
+        fetchBlogs();
       } else {
         console.error("Update failed:", result);
       }
@@ -111,7 +125,7 @@ function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
             }
             className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
           />
-          <TagInput
+          <Input
             type="text"
             label="Blog Keywords"
             placeholder="Enter keywords"
@@ -153,7 +167,7 @@ function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
             <ImageInput
               key={index}
               label={index === 0 ? "Blog Image 1" : `Blog Image ${index + 1}`}
-              value={img}
+              value={img.image_url ? img.image_url : img}
               change={(value) => {
                 let newImages = [...updatedBlog.images];
                 newImages[index] = value;
