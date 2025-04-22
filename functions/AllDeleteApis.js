@@ -12,14 +12,33 @@ export const deleteSubcategory = async (id) => {
 
 export const deleteBlog = async (id) => {
   try {
-    //const response1 = await apiService(`blogs/${id}`, "DELETE");
     const response = await axios.delete(`${BASE_LOCAL_URL}/blogs/${id}/`);
     console.log(response);
     return response;
   } catch (error) {
     console.error(`Error deleting blog ${id}:`, error);
     throw error;
-    t;
+  }
+};
+
+export const deleteCategory = async (id) => {
+  try {
+    const response = await axios.delete(`${BASE_LOCAL_URL}/categories/${id}`);
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.error(`Error deleting Category ${id}:`, error);
+    throw error;
+  }
+};
+export const deleteProduct = async (id) => {
+  try {
+    const response = await axios.delete(`${BASE_LOCAL_URL}/products/${id}`);
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.error(`Error deleting Product ${id}:`, error);
+    throw error;
   }
 };
 

@@ -8,7 +8,7 @@ import Input from "@/utils/Input";
 import SelectInput from "@/utils/SelectInput";
 import { useState } from "react";
 
-export default function Home() {
+export default function Setting() {
   const [name, setName] = useState("Kidos");
   const [slug, setSlug] = useState("kidos-online-shop");
   // Social Media States
@@ -57,7 +57,7 @@ export default function Home() {
   ];
   return (
     <div className="ml-[250px] mt-8 px-10">
-      <Heading title={"Admin Panel Settings"} />
+      <Heading title={"Settings in Top Rated Designer Website"} />
       <div className="flex flex-row items-center w-full">
         <Input
           style={"mr-3"}

@@ -8,7 +8,16 @@ import { FiMenu, FiX } from "react-icons/fi";
 function Sidebar() {
   const pathname = usePathname();
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [showItems, setShowItems] = useState(false);
+  const [openMenus, setOpenMenus] = useState({});
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleMenu = (index) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
 
   return (
     <>
@@ -63,21 +72,91 @@ function Sidebar() {
         </div>
 
         {/* Menu */}
-        <div className="mt-10 overflow-y-auto h-[calc(100%-180px)]">
+        <div className="mt-10 overflow-y-auto thin-scrollbar h-[calc(100%-180px)]">
           {SidebarMenu.map((item, index) => (
-            <Link
-              key={index}
-              href={item.link}
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex flex-row items-center hover:bg-slate-800 py-3 px-4 my-3 mx-2 hover:rounded-[8px] hover:text-slate-200 ${
-                pathname === item.link
-                  ? "bg-slate-800 text-slate-200"
-                  : "text-slate-400"
-              }`}
-            >
-              {item.icon()}
-              <p className="text-[15px] text-lato ml-2">{item.name}</p>
-            </Link>
+            <div key={index}>
+              {item.link ? (
+                <Link
+                  href={item.link}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex flex-row items-center hover:bg-slate-800 py-3 px-4 my-3 mx-2 hover:rounded-[8px] hover:text-slate-200 ${
+                    pathname === item.link
+                      ? "bg-slate-800 text-slate-200"
+                      : "text-slate-400"
+                  }`}
+                >
+                  {item.icon()}
+
+                  <p className="text-[15px] text-lato ml-2">{item.name}</p>
+                </Link>
+              ) : (
+                <div
+                  href={item.link}
+                  // onClick={() => setMobileMenuOpen(false)}
+                  className={`flex flex-col hover:bg-slate-800 py-3 px-4 my-3 mx-2 hover:rounded-[8px] hover:text-slate-200 cursor-pointer ${
+                    showItems ? "bg-slate-800 text-slate-200" : "text-slate-400"
+                  }`}
+                >
+                  <div className="flex flex-row items-center mb-2">
+                    {item.icon()}
+                    <div
+                      className="flex flex-row justify-between items-center w-full"
+                      onClick={() => setShowItems((prev) => !prev)}
+                    >
+                      <p className="text-[15px] text-lato ml-2">{item.name}</p>
+                      {item.items && (
+                        <i className="fa-solid fa-chevron-down"></i>
+                      )}
+                    </div>
+                  </div>
+                  {showItems &&
+                    item.items?.map((web, webIndex) => (
+                      <div
+                        key={webIndex}
+                        className="flex flex-col py-2 border-[1px] border-white/50 my-2"
+                      >
+                        <div
+                          className="flex flex-row items-center w-full cursor-pointer  px-2"
+                          onClick={() => toggleMenu(webIndex)}
+                        >
+                          <img
+                            src={web.image}
+                            className="w-[15px] h-[15px] mr-2"
+                          />
+                          <div className="flex flex-row justify-between  items-center w-full">
+                            <p className="text-[13px] text-lato ml-2">
+                              {web.name}
+                            </p>
+                            <i className="fa-solid fa-chevron-down text-[12px] text-gray-400"></i>
+                          </div>
+                        </div>
+                        {/* menus */}
+                        {openMenus[webIndex] && (
+                          <div className="flex flex-col px-1 mt-2">
+                            {web.menu.map((menu, index) => (
+                              <Link
+                                key={index}
+                                href={menu.link}
+                                className={`flex flex-row items-center mb-2 py-1 px-2 text-gray-400 ${
+                                  pathname === menu.link
+                                    ? "bg-slate-700 text-slate-300"
+                                    : "text-slate-400"
+                                }`}
+                              >
+                                {menu.icon()}
+
+                                <p className="text-[12px] text-lato ml-2">
+                                  {menu.name}
+                                </p>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
 

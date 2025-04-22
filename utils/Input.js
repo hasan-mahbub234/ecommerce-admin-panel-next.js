@@ -9,6 +9,7 @@ function Input({
   inputstyle,
   style,
   type,
+  required,
 }) {
   return (
     <div className={`my-2 ${style && style}`}>
@@ -18,6 +19,7 @@ function Input({
           style={txtstyle && txtstyle}
         >
           {label}
+          {required && <span className="text-[18px] text-red-600">*</span>}
         </p>
       )}
 
@@ -27,6 +29,7 @@ function Input({
         onChange={(e) => change(e.target.value)}
         className="border-[2px] border-gray-400 rounded-[3px] py-2 px-3 placeholder:text-gray-300 text-gray-600 font-lato text-[14px] w-[500px]"
         style={inputstyle && inputstyle}
+        required={required}
       />
     </div>
   );

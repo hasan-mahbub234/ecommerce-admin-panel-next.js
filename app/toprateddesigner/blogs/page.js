@@ -35,10 +35,6 @@ export default function Blog() {
     setLoading(true);
     try {
       const response = await axios.get(`${BASE_LOCAL_URL}/blogs`);
-      // if (!response.ok) throw new Error("Network response was not ok");
-
-      //  const text = await response.text();
-      // const data = text ? JSON.parse(text) : [];
       console.log(response);
       setBlogs(response.data);
     } catch (error) {
@@ -92,7 +88,7 @@ export default function Blog() {
                 <img
                   src={`${item.image_url}`}
                   key={index}
-                  alt="Subcategory"
+                  alt="blog"
                   className="w-[40px] h-[40px] object-cover rounded-md mx-1 my-1"
                 />
               ))
@@ -184,6 +180,7 @@ export default function Blog() {
     if (blog.title) {
       const cleanedImages = blog.images.filter((img) => img !== "");
       const cleanedBlog = { ...blog, images: cleanedImages };
+      console.log(cleanedBlog.images);
       try {
         const formData = new FormData();
         formData.append("title", cleanedBlog.title);

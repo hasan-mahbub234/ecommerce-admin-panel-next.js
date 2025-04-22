@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 
-function ImageInput({ value, change, label, txtstyle, inputstyle }) {
+function ImageInput({ value, change, label, txtstyle, inputstyle, required }) {
   const [preview, setPreview] = useState(value ? `${value}` : null);
 
   const handleImageChange = (event) => {
@@ -20,7 +20,8 @@ function ImageInput({ value, change, label, txtstyle, inputstyle }) {
         className="font-poppins font-[500] text-[16px] my-2"
         style={txtstyle && txtstyle}
       >
-        {label}
+        {label}{" "}
+        {required && <span className="text-[18px] text-red-600">*</span>}
       </p>
       <label
         className="border-[2px] border-gray-400 rounded-[3px] flex flex-row items-center justify-center w-[200px] h-[200px] cursor-pointer"
@@ -42,6 +43,7 @@ function ImageInput({ value, change, label, txtstyle, inputstyle }) {
           accept="image/*"
           onChange={handleImageChange}
           className="hidden"
+          required={required}
         />
       </label>
     </div>

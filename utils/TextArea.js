@@ -9,6 +9,7 @@ function TextArea({
   inputstyle,
   style,
   type,
+  required,
 }) {
   return (
     <div className={`my-2 ${style && style}`}>
@@ -17,7 +18,8 @@ function TextArea({
           className="font-poppins font-[500] text-[16px] my-1"
           style={txtstyle && txtstyle}
         >
-          {label}
+          {label}{" "}
+          {required && <span className="text-[18px] text-red-600">*</span>}
         </p>
       )}
 
@@ -28,6 +30,7 @@ function TextArea({
         className="border-[2px] border-gray-400 rounded-[3px] py-2 px-3 placeholder:text-gray-300 text-gray-600 font-lato text-[14px] w-[500px]"
         style={inputstyle && inputstyle}
         rows={5}
+        required={required}
       />
     </div>
   );

@@ -11,9 +11,9 @@ function SelectInput({
   style,
   dropdownOptions,
   renderOption, // Custom rendering function
+  required,
 }) {
   const [showDropdown, setShowDropdown] = useState(false);
-  console.log(value);
 
   return (
     <div className={`my-2 ${style && style}`}>
@@ -22,7 +22,8 @@ function SelectInput({
           className="font-poppins font-[500] text-[16px] my-2"
           style={txtstyle}
         >
-          {label}
+          {label}{" "}
+          {required && <span className="text-[18px] text-red-600">*</span>}
         </p>
       )}
 
@@ -34,6 +35,9 @@ function SelectInput({
         >
           <div className="flex flex-row items-center">
             {value.icon && value.icon()}
+            {value.image && (
+              <img src={value.image} className="w-[15px] h-[15px] mr-3" />
+            )}
             <p className={`${value ? "text-gray-600" : "text-gray-600"}`}>
               {value.name ? value.name : value || placeholder}
             </p>
