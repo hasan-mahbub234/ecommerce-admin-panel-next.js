@@ -29,7 +29,11 @@ function AddCategory({ setAdd, setcategory, category, handleAdd }) {
           value={category.image}
           change={(value) => setcategory((prev) => ({ ...prev, image: value }))}
         />
-        <Button text={"Add"} change={handleAdd} />
+        <Button
+          text={"Add"}
+          change={handleAdd}
+          style="w-full sm:w-auto px-3 sm:px-6 py-1.5 sm:py-2 mt-24"
+        />
       </div>
     </>
   );

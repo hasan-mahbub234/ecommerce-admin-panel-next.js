@@ -8,6 +8,7 @@ import { formatDate } from "@/functions/basicFunc";
 import Button from "@/utils/Button";
 import DataTable from "@/utils/DataTable";
 import Heading from "@/utils/Heading";
+import Loader from "@/utils/Loader";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -30,6 +31,7 @@ export default function Products() {
   const [add, setAdd] = useState(false);
   const [update, setUpdate] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [addloading, setAddLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState(new Set());
 
   const fetchProducts = async () => {
@@ -93,6 +95,22 @@ export default function Products() {
         </div>
       ),
     },
+    {
+      key: "video_file",
+      label: "Video",
+      render: (row) => (
+        <div className="flex flex-row items-center flex-wrap">
+          {row.video ? (
+            <video
+              src={`${row.video}`}
+              className="w-[100px] h-[50px] object-cover"
+            />
+          ) : (
+            "No Video"
+          )}
+        </div>
+      ),
+    },
     { key: "brand", label: "Brand" },
     {
       key: "images",
@@ -126,7 +144,7 @@ export default function Products() {
         <div className="flex flex-col space-y-1">
           <ActionColumn
             editFunc={() => {
-              setProduct(row); // Set the selected subcategory data
+              setProduct({ ...row, video_file: row.video }); // Set the selected subcategory data
               setUpdate(true); // Open the update form
             }}
             dltFunc={() => handleDeleteProduct(row.uid)}
@@ -146,9 +164,10 @@ export default function Products() {
       product.category_id !== "" &&
       product.category !== ""
     ) {
+      setAddLoading(true);
       const cleanedImages = product.images.filter((img) => img !== "");
       const cleanedProduct = { ...product, images: cleanedImages };
-      //console.log(cleanedBlog.images);
+      console.log(cleanedProduct.video_file);
       try {
         const formData = new FormData();
         formData.append("name", cleanedProduct.name);
@@ -161,6 +180,10 @@ export default function Products() {
         formData.append("brand", cleanedProduct.brand);
         formData.append("age", cleanedProduct.age);
         formData.append("discount", cleanedProduct.discount);
+
+        if (cleanedProduct.video_file !== "" && cleanedProduct.video_file) {
+          formData.append("video_file", cleanedProduct.video_file);
+        }
         cleanedProduct.images
           .filter((img) => img instanceof File)
           .forEach((file, index) => {
@@ -192,6 +215,8 @@ export default function Products() {
         }
       } catch (error) {
         console.error("Error adding blog:", error);
+      } finally {
+        setAddLoading(false);
       }
     } else {
       //console.error("Required fields are missing");
@@ -209,6 +234,7 @@ export default function Products() {
             product={product}
             handleAdd={handleAddProduct}
           />
+          {addloading && <Loader message="Adding product..." />}
         </div>
       ) : update ? (
         <div className="w-full max-w-4xl mx-auto">

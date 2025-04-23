@@ -4,6 +4,7 @@ import Button from "@/utils/Button";
 import Heading from "@/utils/Heading";
 import ImageInput from "@/utils/ImageInput";
 import Input from "@/utils/Input";
+import Loader from "@/utils/Loader";
 import React, { useState } from "react";
 
 function UpdateCategory({ setUpdate, category, fetchCategories }) {
@@ -11,6 +12,7 @@ function UpdateCategory({ setUpdate, category, fetchCategories }) {
     name: category.name,
     image: category.image,
   });
+  const [loading, setLoading] = useState(false);
 
   //console.log(category);
 
@@ -21,6 +23,7 @@ function UpdateCategory({ setUpdate, category, fetchCategories }) {
     }
 
     try {
+      setLoading(true);
       const formData = new FormData();
       formData.append("name", updatedCategory.name);
 
@@ -47,6 +50,8 @@ function UpdateCategory({ setUpdate, category, fetchCategories }) {
       }
     } catch (error) {
       console.error("Error updating category:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,7 +79,12 @@ function UpdateCategory({ setUpdate, category, fetchCategories }) {
             setUpdatedCategory((prev) => ({ ...prev, image: value }))
           }
         />
-        <Button text="Update" change={handleUpdate} />
+        <Button
+          text="Update"
+          change={handleUpdate}
+          style="w-full sm:w-auto px-3 sm:px-6 py-1.5 sm:py-2 mt-24"
+        />
+        {loading && <Loader message="Updating Category..." />}
       </div>
     </>
   );

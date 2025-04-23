@@ -114,7 +114,7 @@ function AddBlog({ setAdd, setBlog, blog, handleAdd }) {
         <Button
           text="Add Blog"
           change={handleAdd}
-          className="w-full sm:w-auto px-3 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm"
+          style="w-full sm:w-auto px-3 sm:px-6 py-1.5 sm:py-2 mt-24"
         />
       </div>
     </div>

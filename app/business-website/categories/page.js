@@ -7,6 +7,7 @@ import { BASE_LOCAL_URL } from "@/functions/apiService";
 import Button from "@/utils/Button";
 import DataTable from "@/utils/DataTable";
 import Heading from "@/utils/Heading";
+import Loader from "@/utils/Loader";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -19,6 +20,7 @@ export default function Categories() {
   const [add, setAdd] = useState(false);
   const [update, setUpdate] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [addloading, setAddLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState(new Set());
 
   const fetchCategories = async () => {
@@ -100,6 +102,7 @@ export default function Categories() {
     if (category.name !== "" && category.image) {
       // console.log(category);
       try {
+        setAddLoading(true);
         const formData = new FormData();
         formData.append("name", category.name);
         formData.append("image_file", category.image);
@@ -119,6 +122,8 @@ export default function Categories() {
         }
       } catch (error) {
         console.error("Error adding Category:", error);
+      } finally {
+        setAddLoading(false);
       }
     } else {
       console.error("Image or name is missing");
@@ -136,6 +141,7 @@ export default function Categories() {
             setcategory={setcategory}
             handleAdd={handleAddCategory}
           />
+          {addloading && <Loader message="Adding Category..." />}
         </>
       ) : update ? (
         <>

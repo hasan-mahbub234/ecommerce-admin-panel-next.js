@@ -5,6 +5,7 @@ import Heading from "@/utils/Heading";
 import ImageInput from "@/utils/ImageInput";
 import Input from "@/utils/Input";
 import { BASE_LOCAL_URL } from "@/functions/apiService";
+import Loader from "@/utils/Loader";
 
 export default function UpdateExpert({ setUpdate, expert, fetchExpert }) {
   const [updateExpert, setUpdateExpert] = useState({
@@ -14,6 +15,7 @@ export default function UpdateExpert({ setUpdate, expert, fetchExpert }) {
     technology: expert.technology,
     image: expert.image,
   });
+  const [loading, setLoading] = useState(false);
 
   const handleUpdate = async () => {
     if (!updateExpert.name) {
@@ -22,6 +24,7 @@ export default function UpdateExpert({ setUpdate, expert, fetchExpert }) {
     }
 
     try {
+      setLoading(true);
       const formData = new FormData();
       formData.append("name", updateExpert.name);
       formData.append("type", updateExpert.type);
@@ -49,6 +52,8 @@ export default function UpdateExpert({ setUpdate, expert, fetchExpert }) {
       }
     } catch (error) {
       console.error("Error updating Expert:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,8 +98,14 @@ export default function UpdateExpert({ setUpdate, expert, fetchExpert }) {
             setUpdateExpert((prev) => ({ ...prev, image: value }))
           }
         />
-        <Button text="Update" change={handleUpdate} />
+
+        {loading && <Loader message="Updating Expert..." />}
       </div>
+      <Button
+        text="Update"
+        change={handleUpdate}
+        style="w-full sm:w-auto px-3 sm:px-6 py-1.5 sm:py-2 mt-24"
+      />
     </>
   );
 }

@@ -8,6 +8,7 @@ import { formatDate } from "@/functions/basicFunc";
 import Button from "@/utils/Button";
 import DataTable from "@/utils/DataTable";
 import Heading from "@/utils/Heading";
+import Loader from "@/utils/Loader";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -20,10 +21,12 @@ export default function Expert() {
     technology: [],
     image: "",
   });
+  const [addloading, setAddLoading] = useState(false);
   const [add, setAdd] = useState(false);
   const [update, setUpdate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState(new Set());
+
   const fetchExpert = async () => {
     setLoading(true);
     try {
@@ -110,6 +113,7 @@ export default function Expert() {
   const handleAddExpert = async () => {
     if (expert.name) {
       try {
+        setAddLoading(true);
         const formData = new FormData();
         formData.append("name", expert.name);
         formData.append("type", expert.type);
@@ -132,15 +136,17 @@ export default function Expert() {
           });
         }
       } catch (error) {
-        console.error("Error adding blog:", error);
+        console.error("Error adding expert:", error);
+      } finally {
+        setAddLoading(false);
       }
     } else {
-      console.error("Image or name is missing");
+      console.error("Required fields are missing");
     }
   };
 
   return (
-    <div className=" ml-[250px] mt-8 px-10 ">
+    <div className=" ml-[250px] mt-8 px-10 pb-10 ">
       {add ? (
         <>
           <AddExpert
@@ -149,6 +155,7 @@ export default function Expert() {
             expert={expert}
             handleAdd={handleAddExpert}
           />
+          {addloading && <Loader message="Adding Expert..." />}
         </>
       ) : update ? (
         <>

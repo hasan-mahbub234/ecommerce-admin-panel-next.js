@@ -7,6 +7,7 @@ import Input from "@/utils/Input";
 import TagInput from "@/utils/TagInput"; // Changed from Input to TagInput
 import TextArea from "@/utils/TextArea";
 import { BASE_LOCAL_URL } from "@/functions/apiService";
+import Loader from "@/utils/Loader";
 
 function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
   const [updatedBlog, setUpdatedBlog] = useState({
@@ -18,6 +19,7 @@ function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
     author: blog.author,
     images: blog.images || [""], // Ensure images is an array with at least one empty string
   });
+  const [loading, setLoading] = useState(false);
 
   const handleUpdate = async () => {
     if (!updatedBlog.title) {
@@ -26,6 +28,7 @@ function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
     }
 
     try {
+      setLoading(true);
       const formData = new FormData();
       formData.append("title", updatedBlog.title);
       formData.append("slug", updatedBlog.slug);
@@ -74,11 +77,13 @@ function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
       }
     } catch (error) {
       console.error("Error updating Blog:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="px-2 sm:px-4">
+    <div className="px-2 sm:px-4 pb-10">
       <div className="flex items-center mb-4">
         <BackButton
           change={() => setUpdate(false)}
@@ -189,14 +194,14 @@ function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
             />
           ))}
         </div>
-
-        {/* Update Button */}
-        <Button
-          text="Update Blog"
-          change={handleUpdate}
-          className="w-full sm:w-auto px-3 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm"
-        />
       </div>
+      {/* Update Button */}
+      <Button
+        text="Update Blog"
+        change={handleUpdate}
+        style="w-full sm:w-auto px-3 sm:px-6 py-1.5 sm:py-2 mt-24"
+      />
+      {loading && <Loader message="Updating Blog..." />}
     </div>
   );
 }

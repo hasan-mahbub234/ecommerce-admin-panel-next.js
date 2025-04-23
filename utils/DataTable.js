@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import SelectInput from "./SelectInput";
 import ActionButton from "./ActionButton";
 
@@ -110,7 +110,7 @@ function DataTable({
             {columns.map((column, index) => (
               <th
                 key={index}
-                className="border border-gray-700 px-4 py-2 text-left font-poppins font-[500] text-[14px]"
+                className="border border-gray-700 px-4 py-2 text-left font-poppins font-[500] text-[12px]"
               >
                 {column.label}
               </th>
@@ -134,7 +134,7 @@ function DataTable({
                 {columns.map((column, colIndex) => (
                   <td
                     key={colIndex}
-                    className="border border-gray-400 px-4 py-2 text-[14px] font-roboto font-[500]"
+                    className="border border-gray-400 px-2 py-2 text-[10px] font-roboto font-[500]"
                   >
                     {column.render
                       ? column.render(row) // 🔥 Call render function if available

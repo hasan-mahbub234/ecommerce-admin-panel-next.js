@@ -7,6 +7,7 @@ import Input from "@/utils/Input";
 import SelectInput from "@/utils/SelectInput";
 import TagInput from "@/utils/TagInput";
 import TextArea from "@/utils/TextArea";
+import VideoInput from "@/utils/VideoInput";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
@@ -26,10 +27,10 @@ function AddProduct({ setAdd, setProduct, product, handleAdd }) {
   useEffect(() => {
     fetchCategories();
   }, []);
-  console.log(product.category_id, product.category);
+  //console.log(product.category_id, product.category);
 
   return (
-    <div className="px-2 sm:px-4">
+    <div className="px-2 sm:px-4 pb-10">
       <div className="flex items-center mb-4">
         <BackButton
           change={() => setAdd((prev) => !prev)}
@@ -187,13 +188,22 @@ function AddProduct({ setAdd, setProduct, product, handleAdd }) {
           )}
         </div>
 
-        {/* Add Button */}
-        <Button
-          text="Add Product"
-          change={handleAdd}
-          className="w-full sm:w-auto px-3 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm"
+        <VideoInput
+          label="Add Product Video"
+          value={product.video_file}
+          change={(file) =>
+            setProduct((prev) => ({ ...prev, video_file: file }))
+          }
+          remove={() => setProduct((prev) => ({ ...prev, video_file: "" }))}
+          required={false}
         />
       </div>
+      {/* Add Button */}
+      <Button
+        text="Add Product"
+        change={handleAdd}
+        style="w-full sm:w-auto px-3 sm:px-6 py-1.5 sm:py-2 mt-24"
+      />
     </div>
   );
 }

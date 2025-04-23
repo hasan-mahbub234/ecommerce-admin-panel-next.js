@@ -66,9 +66,13 @@ export default function AddExpert({ setAdd, setExpert, expert, handleAdd }) {
             change={(value) => setExpert((prev) => ({ ...prev, image: value }))}
           />
         </div>
-
-        <Button text={"Add"} change={handleAdd} />
       </div>
+
+      <Button
+        text={"Add"}
+        change={handleAdd}
+        style="w-full sm:w-auto px-3 sm:px-6 py-1.5 sm:py-2 mt-24"
+      />
     </>
   );
 }

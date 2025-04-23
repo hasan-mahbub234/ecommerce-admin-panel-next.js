@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-function ImageInput({
+function VideoInput({
   value,
   change,
   remove,
@@ -13,28 +13,27 @@ function ImageInput({
   const [preview, setPreview] = useState(value ? `${value}` : null);
 
   useEffect(() => {
-    // Update preview if value changes externally
     if (typeof value === "string") {
       setPreview(value);
     } else if (value instanceof File) {
-      const imageUrl = URL.createObjectURL(value);
-      setPreview(imageUrl);
+      const videoUrl = URL.createObjectURL(value);
+      setPreview(videoUrl);
     } else {
       setPreview(null);
     }
   }, [value]);
 
-  const handleImageChange = (event) => {
+  const handleVideoChange = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setPreview(imageUrl);
-      change(file); // Pass file to parent
+    if (file && file.type.startsWith("video/")) {
+      const videoUrl = URL.createObjectURL(file);
+      setPreview(videoUrl);
+      change(file); // Send video file to parent
     }
   };
 
   return (
-    <div className="relative my-2 w-[200px] h-[200px]">
+    <div className="relative my-10 top-10 w-[300px] h-[200px]">
       <p
         className="font-poppins font-[500] text-[16px] my-2"
         style={txtstyle && txtstyle}
@@ -44,24 +43,24 @@ function ImageInput({
       </p>
 
       <label
-        className="border-[2px] border-gray-400 rounded-[3px] flex items-center justify-center w-full h-full cursor-pointer  overflow-hidden"
+        className="border-[2px] border-gray-400 rounded-[3px] flex items-center justify-center w-full h-full cursor-pointer overflow-hidden bg-black"
         style={inputstyle && inputstyle}
       >
         {preview ? (
-          <img
+          <video
             src={preview}
-            alt="Selected"
+            controls
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="border-2 border-dashed border-gray-400 rounded-[50px] p-3 flex items-center justify-center">
-            <i className="fa-solid fa-plus text-[20px] "></i>
+          <div className="border-2 border-dashed border-gray-400 rounded-[6px] p-3 flex items-center justify-center text-white">
+            <i className="fa-solid fa-video text-[20px]"></i>
           </div>
         )}
         <input
           type="file"
-          accept="image/*"
-          onChange={handleImageChange}
+          accept="video/*"
+          onChange={handleVideoChange}
           className="hidden"
           required={required}
         />
@@ -80,4 +79,4 @@ function ImageInput({
   );
 }
 
-export default ImageInput;
+export default VideoInput;

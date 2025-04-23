@@ -12,6 +12,7 @@ import BackButton from "@/utils/BackButton";
 import Button from "@/utils/Button";
 import DataTable from "@/utils/DataTable";
 import Heading from "@/utils/Heading";
+import Loader from "@/utils/Loader";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -29,6 +30,7 @@ export default function Blog() {
   const [add, setAdd] = useState(false);
   const [update, setUpdate] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [addloading, setAddLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState(new Set());
 
   const fetchBlogs = async () => {
@@ -182,6 +184,7 @@ export default function Blog() {
       const cleanedBlog = { ...blog, images: cleanedImages };
       console.log(cleanedBlog.images);
       try {
+        setAddLoading(true);
         const formData = new FormData();
         formData.append("title", cleanedBlog.title);
         formData.append("slug", cleanedBlog.slug);
@@ -212,6 +215,8 @@ export default function Blog() {
         }
       } catch (error) {
         console.error("Error adding blog:", error);
+      } finally {
+        setAddLoading(false);
       }
     } else {
       console.error("Image or name is missing");
@@ -228,6 +233,7 @@ export default function Blog() {
             blog={blog}
             handleAdd={handleAddBlog}
           />
+          {addloading && <Loader message="Adding Blog..." />}
         </div>
       ) : update ? (
         <div className="w-full max-w-4xl mx-auto">
