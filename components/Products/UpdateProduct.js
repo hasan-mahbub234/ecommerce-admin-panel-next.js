@@ -13,6 +13,7 @@ import VideoInput from "@/utils/VideoInput";
 import Loader from "@/utils/Loader";
 
 function UpdateProduct({ setUpdate, product, fetchProducts }) {
+  const token = localStorage.getItem("token");
   const [updatedProduct, setUpdatedProduct] = useState({
     name: product.name,
     quantity: product.quantity,
@@ -23,9 +24,14 @@ function UpdateProduct({ setUpdate, product, fetchProducts }) {
     brand: product.brand,
     age: product.age,
     discount: product.discount,
+    size: product.size,
+    weight: product.weight,
+    color: product.color,
+    tags: product.tags,
     primary_image: product.primary_image,
     images: product.images,
     video_file: product.video_file,
+    best_selling: product.best_selling,
   });
   const [loading, setLoading] = useState(false);
   const [selectedCat, setSelectedCat] = useState(product.category);
@@ -43,6 +49,7 @@ function UpdateProduct({ setUpdate, product, fetchProducts }) {
 
   useEffect(() => {
     fetchCategories();
+    console.log(product);
   }, []);
 
   const handleUpdate = async () => {
@@ -63,6 +70,11 @@ function UpdateProduct({ setUpdate, product, fetchProducts }) {
       formData.append("brand", cleanedProduct.brand);
       formData.append("age", cleanedProduct.age);
       formData.append("discount", cleanedProduct.discount);
+      formData.append("size", cleanedProduct.size.join(","));
+      formData.append("weight", cleanedProduct.weight.join(","));
+      formData.append("color", cleanedProduct.color.join(","));
+      formData.append("tags", cleanedProduct.tags.join(","));
+      formData.append("best_selling", cleanedProduct.best_selling);
       if (cleanedProduct.video_file !== "" && cleanedProduct.video_file) {
         formData.append("video_file", cleanedProduct.video_file);
       }
@@ -81,12 +93,17 @@ function UpdateProduct({ setUpdate, product, fetchProducts }) {
       newImageFiles.forEach((file) => {
         formData.append("images", file);
       });
+      //formData.append("images", newImageFiles);
+      //  console.log(formData);
 
       const response = await fetch(
         `${BASE_LOCAL_URL}/products/${product.uid}/`,
         {
           method: "PATCH",
           body: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -200,6 +217,64 @@ function UpdateProduct({ setUpdate, product, fetchProducts }) {
             className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
           />
         </div>
+        {/* size & weight & color */}
+        <div className="space-y-3 sm:space-y-4">
+          <Input
+            type="text"
+            label="Product Size"
+            placeholder="Enter size"
+            value={updatedProduct.size}
+            change={(value) =>
+              setUpdatedProduct((prev) => ({ ...prev, size: value }))
+            }
+            className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
+          />
+          <Input
+            type="text"
+            label="Weight"
+            placeholder="Enter weight"
+            value={updatedProduct.weight}
+            change={(value) =>
+              setUpdatedProduct((prev) => ({ ...prev, weight: value }))
+            }
+            className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
+          />
+
+          <Input
+            type="text"
+            label="Color"
+            placeholder="Enter color"
+            value={updatedProduct.color}
+            change={(value) =>
+              setUpdatedProduct((prev) => ({ ...prev, color: value }))
+            }
+            className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
+          />
+        </div>
+        {/* color & age */}
+        <div className="space-y-3 sm:space-y-4">
+          <Input
+            type="text"
+            label="Color"
+            placeholder="Enter color"
+            value={product.color}
+            change={(value) =>
+              setUpdatedProduct((prev) => ({ ...prev, color: value }))
+            }
+            className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
+          />
+          <Input
+            type="text"
+            label="Tags"
+            placeholder="Enter tags"
+            value={product.tags}
+            change={(value) =>
+              setUpdatedProduct((prev) => ({ ...prev, tags: value }))
+            }
+            className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
+          />
+        </div>
+
         {/* quantity & age */}
         <div className="space-y-3 sm:space-y-4">
           <Input
@@ -251,7 +326,7 @@ function UpdateProduct({ setUpdate, product, fetchProducts }) {
         />
         {/* Image Inputs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-5">
-          {(updatedProduct.images.length > 0
+          {(updatedProduct.images?.length > 0
             ? updatedProduct.images
             : [""]
           ).map((img, index) => (
@@ -261,7 +336,7 @@ function UpdateProduct({ setUpdate, product, fetchProducts }) {
               value={img.image_url ? img.image_url : img}
               change={(value) => {
                 let newImages =
-                  updatedProduct.images.length > 0
+                  updatedProduct.images?.length > 0
                     ? [...updatedProduct.images]
                     : [""];
                 newImages[index] = value;
@@ -301,6 +376,23 @@ function UpdateProduct({ setUpdate, product, fetchProducts }) {
           }
           required={false}
         />
+      </div>
+      {/* Best selling */}
+      <div className="space-y-3 sm:space-y-4 mt-20">
+        <label className="text-[17px] font-semibold">
+          <input
+            type="checkbox"
+            checked={updatedProduct.best_selling}
+            onChange={(e) =>
+              setUpdatedProduct((prev) => ({
+                ...prev,
+                best_selling: e.target.checked,
+              }))
+            }
+            className="mr-3 cursor-pointer"
+          />
+          Best Selling
+        </label>
       </div>
       {/* Update Button */}
       <Button

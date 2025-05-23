@@ -13,6 +13,7 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function Products() {
+  const token = localStorage.getItem("token");
   const [Products, setProducts] = useState(null);
   const [product, setProduct] = useState({
     name: "",
@@ -23,10 +24,15 @@ export default function Products() {
     category_id: "",
     brand: "",
     age: "",
-    discount: "",
+    size: "",
+    weight: "",
+    color: "",
+    tags: "",
+    discount: "0",
     primary_image: null,
     images: [],
     video_file: null,
+    best_selling: false,
   });
   const [add, setAdd] = useState(false);
   const [update, setUpdate] = useState(false);
@@ -68,7 +74,7 @@ export default function Products() {
     try {
       for (const rowIndex of selectedRows) {
         const productToDelete = Products[rowIndex];
-        await handleDeleteProduct(productToDelete.uid);
+        await handleDeleteProduct(productToDelete.uid, token);
       }
       setSelectedRows(new Set());
     } catch (error) {
@@ -180,6 +186,11 @@ export default function Products() {
         formData.append("brand", cleanedProduct.brand);
         formData.append("age", cleanedProduct.age);
         formData.append("discount", cleanedProduct.discount);
+        formData.append("size", cleanedProduct.size);
+        formData.append("weight", cleanedProduct.weight);
+        formData.append("color", cleanedProduct.color);
+        formData.append("tags", cleanedProduct.tags);
+        formData.append("best_selling", cleanedProduct.best_selling);
 
         if (cleanedProduct.video_file !== "" && cleanedProduct.video_file) {
           formData.append("video_file", cleanedProduct.video_file);
@@ -190,9 +201,16 @@ export default function Products() {
             formData.append("images", file);
           });
 
+        console.log(formData);
+
         const response = await axios.post(
           `${BASE_LOCAL_URL}/products`,
-          formData
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         console.log(response);
         if (response.status === 201) {
@@ -206,9 +224,14 @@ export default function Products() {
             brand: "",
             age: "",
             discount: "",
+            size: [],
+            weight: [],
+            color: [],
+            tags: [],
             primary_image: null,
             images: [],
             video_file: null,
+            best_selling: false,
           });
           setAdd(false);
           fetchProducts();
@@ -261,9 +284,14 @@ export default function Products() {
                 brand: "",
                 age: "",
                 discount: "",
+                size: [],
+                weight: [],
+                color: [],
+                tags: [],
                 primary_image: null,
                 images: [],
                 video_file: null,
+                best_selling: false,
               });
             }}
             className="w-full sm:w-auto"

@@ -10,9 +10,11 @@ export const deleteSubcategory = async (id) => {
   }
 };
 
-export const deleteBlog = async (id) => {
+export const deleteBlog = async (id, token) => {
   try {
-    const response = await axios.delete(`${BASE_LOCAL_URL}/blogs/${id}/`);
+    const response = await axios.delete(`${BASE_LOCAL_URL}/blogs/${id}/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     console.log(response);
     return response;
   } catch (error) {
@@ -23,7 +25,9 @@ export const deleteBlog = async (id) => {
 
 export const deleteCategory = async (id) => {
   try {
-    const response = await axios.delete(`${BASE_LOCAL_URL}/categories/${id}`);
+    const response = await axios.delete(`${BASE_LOCAL_URL}/categories/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     console.log(response);
     return response;
   } catch (error) {
@@ -31,9 +35,11 @@ export const deleteCategory = async (id) => {
     throw error;
   }
 };
-export const deleteProduct = async (id) => {
+export const deleteProduct = async (id, token) => {
   try {
-    const response = await axios.delete(`${BASE_LOCAL_URL}/products/${id}`);
+    const response = await axios.delete(`${BASE_LOCAL_URL}/products/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     console.log(response);
     return response;
   } catch (error) {
@@ -42,14 +48,30 @@ export const deleteProduct = async (id) => {
   }
 };
 
-export const deleteExpert = async (id) => {
+export const deleteExpert = async (id, token) => {
   try {
     //  const response = await apiService(`experts/${id}`, "DELETE");
-    const response = await axios.delete(`${BASE_LOCAL_URL}experts/${id}`);
+    const response = await axios.delete(`${BASE_LOCAL_URL}/experts/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     console.log(response);
     return response;
   } catch (error) {
     console.error(`Error deleting Expert ${id}:`, error);
+    throw error; // Re-throw to let calling code handle it
+  }
+};
+
+export const deleteDigital = async (id, token) => {
+  try {
+    //  const response = await apiService(`experts/${id}`, "DELETE");
+    const response = await axios.delete(`${BASE_LOCAL_URL}/digital/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.error(`Error deleting Digital product ${id}:`, error);
     throw error; // Re-throw to let calling code handle it
   }
 };

@@ -124,13 +124,16 @@ function DataTable({
             currentData.map((row, rowIndex) => (
               <tr key={rowIndex} className="hover:bg-gray-100">
                 {/* Row Checkbox */}
-                <td className="border border-gray-700 px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedRows.has(rowIndex)}
-                    onChange={() => handleRowSelection(rowIndex)}
-                  />
-                </td>
+                {selectedRows && (
+                  <td className="border border-gray-700 px-4 py-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedRows.has(rowIndex)}
+                      onChange={() => handleRowSelection(rowIndex)}
+                    />
+                  </td>
+                )}
+
                 {columns.map((column, colIndex) => (
                   <td
                     key={colIndex}

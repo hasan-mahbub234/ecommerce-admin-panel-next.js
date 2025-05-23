@@ -12,6 +12,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function Categories() {
+  const token = localStorage.getItem("token");
   const [categories, setCategories] = useState(null);
   const [category, setcategory] = useState({
     name: "",
@@ -38,7 +39,7 @@ export default function Categories() {
 
   const handleDeleteCategory = async (id) => {
     try {
-      const result = await deleteCategory(id);
+      const result = await deleteCategory(id, token);
       if (result.status === 204) {
         fetchCategories();
       }
@@ -79,7 +80,7 @@ export default function Categories() {
             setcategory(row); // Set the selected category data
             setUpdate(true);
           }}
-          dltFunc={() => handleDeleteCategory(row.uid)}
+          dltFunc={() => handleDeleteCategory(row.uid, token)}
         />
       ),
     },

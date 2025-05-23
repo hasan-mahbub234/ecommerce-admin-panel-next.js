@@ -99,8 +99,8 @@ export const SidebarMenu = [
             icon: () => <i className="fa-solid fa-shop text-[12px]"></i>,
           },
           {
-            name: "Sub categories",
-            link: "/business-website/subcategories",
+            name: "Digital Products",
+            link: "/business-website/digital",
             icon: () => <i className="fa-solid fa-list-check text-[12px]"></i>,
           },
           {

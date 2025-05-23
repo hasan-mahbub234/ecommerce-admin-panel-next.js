@@ -1,14 +1,17 @@
 "use client";
 import { SocialMedia } from "@/constants/AllConstants";
+import { useAuth } from "@/context/AuthContext";
 import Button from "@/utils/Button";
 import DataTable from "@/utils/DataTable";
 import Heading from "@/utils/Heading";
 import ImageInput from "@/utils/ImageInput";
 import Input from "@/utils/Input";
 import SelectInput from "@/utils/SelectInput";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function Home() {
+  const { user } = useAuth();
   const [name, setName] = useState("Kidos");
   const [slug, setSlug] = useState("kidos-online-shop");
   // Social Media States
@@ -56,60 +59,83 @@ export default function Home() {
     { key: "link", label: "Link" },
   ];
   return (
-    <div className="ml-[250px] mt-8 px-10">
-      <Heading title={"Admin Panel Settings"} />
-      <div className="flex flex-row items-center w-full">
-        <Input
-          style={"mr-3"}
-          label={"Name"}
-          placeholder={"website"}
-          value={name}
-          change={setName}
-          type={"text"}
-        />
-        <Input
-          label={"Slug"}
-          placeholder={"website"}
-          value={slug}
-          change={setSlug}
-          type={"text"}
-        />
-      </div>
-      <div className="flex flex-row items-center w-full">
-        <ImageInput label={"Logo"} />
-        <ImageInput label={"Favicon"} />
-      </div>
-      <div>
-        <p className="font-poppins font-[500] text-[16px] my-2">Social Media</p>
-        {/* Social Media Add Form */}
-        <div className="flex flex-row items-center justify-start mb-4">
-          <SelectInput
-            // label="Select Social Media"
-            placeholder="Select Social Media"
-            value={selectedMedia}
-            change={setSelectedMedia}
-            dropdownOptions={SocialMedia}
-            style={"mr-3"}
-            renderOption={(option) => (
-              <div className="flex items-center">
-                {option.icon()}
-                <span className="text-gray-700">{option.name}</span>
-              </div>
-            )}
-          />
-          <Input
-            placeholder={"Enter link"}
-            value={link}
-            change={setLink}
-            type={"text"}
-            style={"mr-3"}
-          />
-          <Button change={handleAddSocialMedia} text={"Add"} />
+    <>
+      {!user ? (
+        <div className="ml-[250px] mt-20 px-10 flex flex-col items-center justify-center h-[80vh]">
+          <p className="text-[30px] font-bold text-cyan-800 font-poppins">
+            Welcome to admin panel!
+          </p>
+          <p>
+            Please{" "}
+            <Link href="/signin" className="text-cyan-500 border-b">
+              Signin
+            </Link>{" "}
+            or{" "}
+            <Link href="/login" className="text-cyan-500 border-b">
+              Login
+            </Link>{" "}
+            to start work.
+          </p>
         </div>
+      ) : (
+        <div className="ml-[250px] mt-8 px-10">
+          <Heading title={"Admin Panel Settings"} />
+          <div className="flex flex-row items-center w-full">
+            <Input
+              style={"mr-3"}
+              label={"Name"}
+              placeholder={"website"}
+              value={name}
+              change={setName}
+              type={"text"}
+            />
+            <Input
+              label={"Slug"}
+              placeholder={"website"}
+              value={slug}
+              change={setSlug}
+              type={"text"}
+            />
+          </div>
+          <div className="flex flex-row items-center w-full">
+            <ImageInput label={"Logo"} />
+            <ImageInput label={"Favicon"} />
+          </div>
+          <div>
+            <p className="font-poppins font-[500] text-[16px] my-2">
+              Social Media
+            </p>
+            {/* Social Media Add Form */}
+            <div className="flex flex-row items-center justify-start mb-4">
+              <SelectInput
+                // label="Select Social Media"
+                placeholder="Select Social Media"
+                value={selectedMedia}
+                change={setSelectedMedia}
+                dropdownOptions={SocialMedia}
+                style={"mr-3"}
+                renderOption={(option) => (
+                  <div className="flex items-center">
+                    {option.icon()}
+                    <span className="text-gray-700">{option.name}</span>
+                  </div>
+                )}
+              />
+              <Input
+                placeholder={"Enter link"}
+                value={link}
+                change={setLink}
+                type={"text"}
+                style={"mr-3"}
+              />
+              <Button change={handleAddSocialMedia} text={"Add"} />
+            </div>
 
-        {/* Render DataTable for Social Media */}
-        <DataTable data={socialData} columns={socialColumns} />
-      </div>
-    </div>
+            {/* Render DataTable for Social Media */}
+            <DataTable data={socialData} columns={socialColumns} />
+          </div>
+        </div>
+      )}
+    </>
   );
 }

@@ -27,7 +27,7 @@ function AddProduct({ setAdd, setProduct, product, handleAdd }) {
   useEffect(() => {
     fetchCategories();
   }, []);
-  //console.log(product.category_id, product.category);
+  console.log(product.best_selling);
 
   return (
     <div className="px-2 sm:px-4 pb-10">
@@ -109,6 +109,48 @@ function AddProduct({ setAdd, setProduct, product, handleAdd }) {
             change={(value) =>
               setProduct((prev) => ({ ...prev, discount: value }))
             }
+            className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
+          />
+        </div>
+        {/* size & weight */}
+        <div className="space-y-3 sm:space-y-4">
+          <Input
+            type="text"
+            label="Product Size"
+            placeholder="Enter size"
+            value={product.size}
+            change={(value) => setProduct((prev) => ({ ...prev, size: value }))}
+            className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
+          />
+          <Input
+            type="text"
+            label="Weight"
+            placeholder="Enter weight"
+            value={product.weight}
+            change={(value) =>
+              setProduct((prev) => ({ ...prev, weight: value }))
+            }
+            className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
+          />
+        </div>
+        {/* color & age */}
+        <div className="space-y-3 sm:space-y-4">
+          <Input
+            type="text"
+            label="Color"
+            placeholder="Enter color"
+            value={product.color}
+            change={(value) =>
+              setProduct((prev) => ({ ...prev, color: value }))
+            }
+            className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
+          />
+          <Input
+            type="text"
+            label="Tags"
+            placeholder="Enter tags"
+            value={product.tags}
+            change={(value) => setProduct((prev) => ({ ...prev, tags: value }))}
             className="w-full max-w-full text-xs sm:text-sm py-1 px-2 sm:py-1.5 sm:px-3"
           />
         </div>
@@ -197,6 +239,23 @@ function AddProduct({ setAdd, setProduct, product, handleAdd }) {
           remove={() => setProduct((prev) => ({ ...prev, video_file: "" }))}
           required={false}
         />
+      </div>
+      {/* Best selling */}
+      <div className="space-y-3 sm:space-y-4 mt-20">
+        <label className="text-[17px] font-semibold">
+          <input
+            type="checkbox"
+            checked={product.best_selling}
+            onChange={(e) =>
+              setProduct((prev) => ({
+                ...prev,
+                best_selling: e.target.checked,
+              }))
+            }
+            className="mr-3 cursor-pointer"
+          />
+          Best Selling
+        </label>
       </div>
       {/* Add Button */}
       <Button
