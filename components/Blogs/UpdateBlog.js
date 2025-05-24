@@ -8,8 +8,11 @@ import TagInput from "@/utils/TagInput"; // Changed from Input to TagInput
 import TextArea from "@/utils/TextArea";
 import { BASE_LOCAL_URL } from "@/functions/apiService";
 import Loader from "@/utils/Loader";
+import { useAuth } from "@/context/AuthContext";
+import axios from "axios";
 
 function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
+  const { token } = useAuth();
   const [updatedBlog, setUpdatedBlog] = useState({
     title: blog.title,
     slug: blog.slug,
@@ -26,59 +29,67 @@ function UpdateBlog({ setUpdate, blog, fetchBlogs }) {
       console.error("Title is required");
       return;
     }
+    if (token) {
+      try {
+        setLoading(true);
+        const formData = new FormData();
+        formData.append("title", updatedBlog.title);
+        formData.append("slug", updatedBlog.slug);
+        formData.append("summary", updatedBlog.summary);
+        formData.append("content", updatedBlog.content);
+        formData.append("author", updatedBlog.author);
+        formData.append("keywords", updatedBlog.keywords.join(","));
 
-    try {
-      setLoading(true);
-      const formData = new FormData();
-      formData.append("title", updatedBlog.title);
-      formData.append("slug", updatedBlog.slug);
-      formData.append("summary", updatedBlog.summary);
-      formData.append("content", updatedBlog.content);
-      formData.append("author", updatedBlog.author);
-      formData.append("keywords", updatedBlog.keywords.join(","));
+        // Separate existing URLs and new files
+        const existingImageUrls = [];
+        const newImageFiles = [];
 
-      // Separate existing URLs and new files
-      const existingImageUrls = [];
-      const newImageFiles = [];
+        updatedBlog.images.forEach((img) => {
+          if (typeof img === "string") {
+            existingImageUrls.push(img); // URL or base64 string
+          } else if (img.image_url) {
+            existingImageUrls.push(img.image_url);
+          } else if (img instanceof File) {
+            newImageFiles.push(img);
+          }
+        });
 
-      updatedBlog.images.forEach((img) => {
-        if (typeof img === "string") {
-          existingImageUrls.push(img); // URL or base64 string
-        } else if (img.image_url) {
-          existingImageUrls.push(img.image_url);
-        } else if (img instanceof File) {
-          newImageFiles.push(img);
+        // Append URLs to be retained
+        existingImageUrls.forEach((url) => {
+          formData.append("existing_images", url); // your backend must handle this
+        });
+
+        // Append new files
+        newImageFiles.forEach((file) => {
+          formData.append("images_files", file);
+        });
+
+        const response = await axios.patch(
+          `${BASE_LOCAL_URL}/blogs/${blog.uid}/`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const text = await response.text();
+        const result = text ? JSON.parse(text) : {};
+
+        if (response.ok) {
+          setUpdate(false);
+          fetchBlogs();
+        } else {
+          console.error("Update failed:", result);
         }
-      });
-
-      // Append URLs to be retained
-      existingImageUrls.forEach((url) => {
-        formData.append("existing_images", url); // your backend must handle this
-      });
-
-      // Append new files
-      newImageFiles.forEach((file) => {
-        formData.append("images_files", file);
-      });
-
-      const response = await fetch(`${BASE_LOCAL_URL}/blogs/${blog.uid}/`, {
-        method: "PATCH",
-        body: formData,
-      });
-
-      const text = await response.text();
-      const result = text ? JSON.parse(text) : {};
-
-      if (response.ok) {
-        setUpdate(false);
-        fetchBlogs();
-      } else {
-        console.error("Update failed:", result);
+      } catch (error) {
+        console.error("Error updating Blog:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error updating Blog:", error);
-    } finally {
-      setLoading(false);
+    } else {
+      window.alert("Please Login!");
     }
   };
 

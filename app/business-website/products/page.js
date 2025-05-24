@@ -2,6 +2,7 @@
 import ActionColumn from "@/components/ActionColumn";
 import AddProduct from "@/components/Products/AddProduct";
 import UpdateProduct from "@/components/Products/UpdateProduct";
+import { useAuth } from "@/context/AuthContext";
 import { deleteProduct } from "@/functions/AllDeleteApis";
 import { BASE_LOCAL_URL } from "@/functions/apiService";
 import { formatDate } from "@/functions/basicFunc";
@@ -13,7 +14,7 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function Products() {
-  const token = localStorage.getItem("token");
+  const { token } = useAuth();
   const [Products, setProducts] = useState(null);
   const [product, setProduct] = useState({
     name: "",
@@ -71,14 +72,16 @@ export default function Products() {
 
   // Handle row deletion
   const handleDeleteSelectedRows = async () => {
-    try {
-      for (const rowIndex of selectedRows) {
-        const productToDelete = Products[rowIndex];
-        await handleDeleteProduct(productToDelete.uid, token);
+    if (token) {
+      try {
+        for (const rowIndex of selectedRows) {
+          const productToDelete = Products[rowIndex];
+          await handleDeleteProduct(productToDelete.uid, token);
+        }
+        setSelectedRows(new Set());
+      } catch (error) {
+        console.error("Error deleting selected products:", error);
       }
-      setSelectedRows(new Set());
-    } catch (error) {
-      console.error("Error deleting selected products:", error);
     }
   };
 
@@ -174,72 +177,74 @@ export default function Products() {
       const cleanedImages = product.images.filter((img) => img !== "");
       const cleanedProduct = { ...product, images: cleanedImages };
       console.log(cleanedProduct.video_file);
-      try {
-        const formData = new FormData();
-        formData.append("name", cleanedProduct.name);
-        formData.append("quantity", cleanedProduct.quantity);
-        formData.append("description", cleanedProduct.description);
-        formData.append("price", cleanedProduct.price);
-        formData.append("category", cleanedProduct.category);
-        formData.append("category_id", cleanedProduct.category_id);
-        formData.append("primary_image", cleanedProduct.primary_image);
-        formData.append("brand", cleanedProduct.brand);
-        formData.append("age", cleanedProduct.age);
-        formData.append("discount", cleanedProduct.discount);
-        formData.append("size", cleanedProduct.size);
-        formData.append("weight", cleanedProduct.weight);
-        formData.append("color", cleanedProduct.color);
-        formData.append("tags", cleanedProduct.tags);
-        formData.append("best_selling", cleanedProduct.best_selling);
+      if (token) {
+        try {
+          const formData = new FormData();
+          formData.append("name", cleanedProduct.name);
+          formData.append("quantity", cleanedProduct.quantity);
+          formData.append("description", cleanedProduct.description);
+          formData.append("price", cleanedProduct.price);
+          formData.append("category", cleanedProduct.category);
+          formData.append("category_id", cleanedProduct.category_id);
+          formData.append("primary_image", cleanedProduct.primary_image);
+          formData.append("brand", cleanedProduct.brand);
+          formData.append("age", cleanedProduct.age);
+          formData.append("discount", cleanedProduct.discount);
+          formData.append("size", cleanedProduct.size);
+          formData.append("weight", cleanedProduct.weight);
+          formData.append("color", cleanedProduct.color);
+          formData.append("tags", cleanedProduct.tags);
+          formData.append("best_selling", cleanedProduct.best_selling);
 
-        if (cleanedProduct.video_file !== "" && cleanedProduct.video_file) {
-          formData.append("video_file", cleanedProduct.video_file);
-        }
-        cleanedProduct.images
-          .filter((img) => img instanceof File)
-          .forEach((file, index) => {
-            formData.append("images", file);
-          });
-
-        console.log(formData);
-
-        const response = await axios.post(
-          `${BASE_LOCAL_URL}/products`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+          if (cleanedProduct.video_file !== "" && cleanedProduct.video_file) {
+            formData.append("video_file", cleanedProduct.video_file);
           }
-        );
-        console.log(response);
-        if (response.status === 201) {
-          setProduct({
-            name: "",
-            quantity: "",
-            description: "",
-            price: "",
-            category_name: "",
-            category_id: "",
-            brand: "",
-            age: "",
-            discount: "",
-            size: [],
-            weight: [],
-            color: [],
-            tags: [],
-            primary_image: null,
-            images: [],
-            video_file: null,
-            best_selling: false,
-          });
-          setAdd(false);
-          fetchProducts();
+          cleanedProduct.images
+            .filter((img) => img instanceof File)
+            .forEach((file, index) => {
+              formData.append("images", file);
+            });
+
+          console.log(formData);
+
+          const response = await axios.post(
+            `${BASE_LOCAL_URL}/products`,
+            formData,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          console.log(response);
+          if (response.status === 201) {
+            setProduct({
+              name: "",
+              quantity: "",
+              description: "",
+              price: "",
+              category_name: "",
+              category_id: "",
+              brand: "",
+              age: "",
+              discount: "",
+              size: [],
+              weight: [],
+              color: [],
+              tags: [],
+              primary_image: null,
+              images: [],
+              video_file: null,
+              best_selling: false,
+            });
+            setAdd(false);
+            fetchProducts();
+          }
+        } catch (error) {
+          console.error("Error adding blog:", error);
+        } finally {
+          setAddLoading(false);
         }
-      } catch (error) {
-        console.error("Error adding blog:", error);
-      } finally {
-        setAddLoading(false);
       }
     } else {
       //console.error("Required fields are missing");

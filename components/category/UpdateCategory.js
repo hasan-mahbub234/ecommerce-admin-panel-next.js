@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import { BASE_LOCAL_URL } from "@/functions/apiService";
 import BackButton from "@/utils/BackButton";
 import Button from "@/utils/Button";
@@ -8,6 +9,7 @@ import Loader from "@/utils/Loader";
 import React, { useState } from "react";
 
 function UpdateCategory({ setUpdate, category, fetchCategories }) {
+  const { token } = useAuth();
   const [updatedCategory, setUpdatedCategory] = useState({
     name: category.name,
     image: category.image,
@@ -22,36 +24,40 @@ function UpdateCategory({ setUpdate, category, fetchCategories }) {
       return;
     }
 
-    try {
-      setLoading(true);
-      const formData = new FormData();
-      formData.append("name", updatedCategory.name);
+    if (token) {
+      try {
+        setLoading(true);
+        const formData = new FormData();
+        formData.append("name", updatedCategory.name);
 
-      if (updatedCategory.image && updatedCategory.image !== category.image) {
-        formData.append("image_file", updatedCategory.image);
-      }
-
-      // console.log(formData);
-
-      const response = await fetch(
-        `${BASE_LOCAL_URL}/categories/${category.uid}/`,
-        {
-          method: "PATCH",
-          body: formData,
+        if (updatedCategory.image && updatedCategory.image !== category.image) {
+          formData.append("image_file", updatedCategory.image);
         }
-      );
 
-      const result = await response.json();
-      console.log("Update Response:", result);
+        // console.log(formData);
 
-      if (response.ok) {
-        fetchCategories(); // Refresh the list after update
-        setUpdate(false); // Close the update form
+        const response = await fetch(
+          `${BASE_LOCAL_URL}/categories/${category.uid}/`,
+          {
+            method: "PATCH",
+            body: formData,
+          }
+        );
+
+        const result = await response.json();
+        console.log("Update Response:", result);
+
+        if (response.ok) {
+          fetchCategories(); // Refresh the list after update
+          setUpdate(false); // Close the update form
+        }
+      } catch (error) {
+        console.error("Error updating category:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error updating category:", error);
-    } finally {
-      setLoading(false);
+    } else {
+      window.alert("Please Login!");
     }
   };
 

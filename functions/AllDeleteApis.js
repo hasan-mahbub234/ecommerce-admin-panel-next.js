@@ -23,7 +23,7 @@ export const deleteBlog = async (id, token) => {
   }
 };
 
-export const deleteCategory = async (id) => {
+export const deleteCategory = async (id, token) => {
   try {
     const response = await axios.delete(`${BASE_LOCAL_URL}/categories/${id}`, {
       headers: { Authorization: `Bearer ${token}` },

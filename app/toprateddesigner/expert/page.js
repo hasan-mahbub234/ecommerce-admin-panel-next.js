@@ -2,6 +2,7 @@
 import ActionColumn from "@/components/ActionColumn";
 import AddExpert from "@/components/expert/AddExpert";
 import UpdateExpert from "@/components/expert/UpdateExpert";
+import { useAuth } from "@/context/AuthContext";
 import { deleteExpert } from "@/functions/AllDeleteApis";
 import { BASE_LOCAL_URL } from "@/functions/apiService";
 import { formatDate } from "@/functions/basicFunc";
@@ -13,6 +14,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function Expert() {
+  const { token } = useAuth();
   const [experts, setExperts] = useState(null);
   const [expert, setExpert] = useState({
     name: "",
@@ -43,11 +45,15 @@ export default function Expert() {
     }
   };
   const handleDeleteExpert = async (id) => {
-    try {
-      await deleteExpert(id); // Wait for deletion to complete
-      await fetchExpert(); // Then refresh the list
-    } catch (error) {
-      console.error("Error deleting blog:", error);
+    if (token) {
+      try {
+        await deleteExpert(id, token); // Wait for deletion to complete
+        await fetchExpert(); // Then refresh the list
+      } catch (error) {
+        console.error("Error deleting blog:", error);
+      }
+    } else {
+      window.alert("please Login!");
     }
   };
   useEffect(() => {
@@ -112,33 +118,38 @@ export default function Expert() {
 
   const handleAddExpert = async () => {
     if (expert.name) {
-      try {
-        setAddLoading(true);
-        const formData = new FormData();
-        formData.append("name", expert.name);
-        formData.append("type", expert.type);
-        formData.append("exp", expert.exp);
-        formData.append("image", expert.image);
-        formData.append("technology", expert.technology);
+      if (token) {
+        try {
+          setAddLoading(true);
+          const formData = new FormData();
+          formData.append("name", expert.name);
+          formData.append("type", expert.type);
+          formData.append("exp", expert.exp);
+          formData.append("image", expert.image);
+          formData.append("technology", expert.technology);
 
-        const response = await axios.post(
-          `${BASE_LOCAL_URL}/experts`,
-          formData
-        );
-        console.log(response);
-        if (response.status === 201) {
-          setBlog({
-            name: "",
-            exp: "",
-            technology: [],
-            type: "",
-            image: "",
-          });
+          const response = await axios.post(
+            `${BASE_LOCAL_URL}/experts`,
+            formData,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          console.log(response);
+          if (response.status === 201) {
+            setBlog({
+              name: "",
+              exp: "",
+              technology: [],
+              type: "",
+              image: "",
+            });
+          }
+        } catch (error) {
+          console.error("Error adding expert:", error);
+        } finally {
+          setAddLoading(false);
         }
-      } catch (error) {
-        console.error("Error adding expert:", error);
-      } finally {
-        setAddLoading(false);
+      } else {
+        window.alert("please Login!");
       }
     } else {
       console.error("Required fields are missing");

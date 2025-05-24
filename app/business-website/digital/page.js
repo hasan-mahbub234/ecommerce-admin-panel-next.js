@@ -2,6 +2,7 @@
 import ActionColumn from "@/components/ActionColumn";
 import AddDigital from "@/components/Digital/AddDigital";
 import UpdateDigital from "@/components/Digital/UpdateDigital";
+import { useAuth } from "@/context/AuthContext";
 import { deleteDigital } from "@/functions/AllDeleteApis";
 import { BASE_LOCAL_URL } from "@/functions/apiService";
 import { formatDate } from "@/functions/basicFunc";
@@ -13,7 +14,7 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function Digital() {
-  const token = localStorage.getItem("token");
+  const { token } = useAuth();
   const [Digital, setDigitals] = useState(null);
   const [digital, setDigital] = useState({
     name: "",
@@ -48,14 +49,16 @@ export default function Digital() {
   };
 
   const handleDeleteDigital = async (id) => {
-    try {
-      const result = await deleteDigital(id, token); // Wait for deletion to complete
-      if (result.status === 204) {
-        fetchDigital();
+    if (token) {
+      try {
+        const result = await deleteDigital(id, token); // Wait for deletion to complete
+        if (result.status === 204) {
+          fetchDigital();
+        }
+        // Then refresh the list
+      } catch (error) {
+        console.error("Error deleting blog:", error);
       }
-      // Then refresh the list
-    } catch (error) {
-      console.error("Error deleting blog:", error);
     }
   };
   useEffect(() => {

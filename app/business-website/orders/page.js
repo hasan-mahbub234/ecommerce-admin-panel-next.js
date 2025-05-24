@@ -1,6 +1,7 @@
 "use client";
 import ActionColumn from "@/components/ActionColumn";
 import UpdateOrder from "@/components/orders/UpdateOrder";
+import { useAuth } from "@/context/AuthContext";
 import { BASE_LOCAL_URL } from "@/functions/apiService";
 import { formatDate } from "@/functions/basicFunc";
 import DataTable from "@/utils/DataTable";
@@ -9,7 +10,7 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function Orders() {
-  const token = localStorage.getItem("token");
+  const { token } = useAuth();
   const [orders, setOrders] = useState(null);
   const [order, setOrder] = useState({
     status: "",
@@ -19,17 +20,19 @@ export default function Orders() {
   const [selectedRows, setSelectedRows] = useState(new Set());
 
   const fetchOrder = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`${BASE_LOCAL_URL}/orders/orders`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setOrders(response.data);
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-      setOrders([]);
-    } finally {
-      setLoading(false);
+    if (token) {
+      setLoading(true);
+      try {
+        const response = await axios.get(`${BASE_LOCAL_URL}/orders/orders`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setOrders(response.data);
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+        setOrders([]);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

@@ -11,9 +11,10 @@ import SelectInput from "@/utils/SelectInput";
 import axios from "axios";
 import VideoInput from "@/utils/VideoInput";
 import Loader from "@/utils/Loader";
+import { useAuth } from "@/context/AuthContext";
 
 function UpdateDigital({ setUpdate, digital, fetchDigital }) {
-  const token = localStorage.getItem("token");
+  const { token } = useAuth();
   const [updatedDigital, setUpdatedDigital] = useState({
     name: digital.name,
     description: digital.description,
@@ -84,50 +85,52 @@ function UpdateDigital({ setUpdate, digital, fetchDigital }) {
   };
 
   const handleUpdate = async () => {
-    setLoading(true);
-    try {
-      const formData = new FormData();
-      // console.log(cleanedDigital.video_file);
+    if (token) {
+      setLoading(true);
+      try {
+        const formData = new FormData();
+        // console.log(cleanedDigital.video_file);
 
-      // Basic fields
-      formData.append("name", updatedDigital.name);
-      formData.append("description", updatedDigital.description);
-      formData.append("category", updatedDigital.category);
-      formData.append("category_id", updatedDigital.category_id);
-      formData.append("discount", updatedDigital.discount);
-      formData.append("package", JSON.stringify(updatedDigital.package));
-      formData.append("account_type", updatedDigital.account_type);
-      formData.append("tags", updatedDigital.tags);
+        // Basic fields
+        formData.append("name", updatedDigital.name);
+        formData.append("description", updatedDigital.description);
+        formData.append("category", updatedDigital.category);
+        formData.append("category_id", updatedDigital.category_id);
+        formData.append("discount", updatedDigital.discount);
+        formData.append("package", JSON.stringify(updatedDigital.package));
+        formData.append("account_type", updatedDigital.account_type);
+        formData.append("tags", updatedDigital.tags);
 
-      // ✅ Append primary_image only if it's a File
-      if (updatedDigital.primary_image instanceof File) {
-        formData.append("primary_image", updatedDigital.primary_image);
-      }
-
-      const response = await fetch(
-        `${BASE_LOCAL_URL}/digital/${digital.uid}/`,
-        {
-          method: "PATCH",
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        // ✅ Append primary_image only if it's a File
+        if (updatedDigital.primary_image instanceof File) {
+          formData.append("primary_image", updatedDigital.primary_image);
         }
-      );
 
-      const text = await response.text();
-      const result = text ? JSON.parse(text) : {};
+        const response = await fetch(
+          `${BASE_LOCAL_URL}/digital/${digital.uid}/`,
+          {
+            method: "PATCH",
+            body: formData,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-      if (response.ok) {
-        setUpdate(false);
-        fetchDigital();
-      } else {
-        console.error("Update failed:", result);
+        const text = await response.text();
+        const result = text ? JSON.parse(text) : {};
+
+        if (response.ok) {
+          setUpdate(false);
+          fetchDigital();
+        } else {
+          console.error("Update failed:", result);
+        }
+      } catch (error) {
+        console.error("Error updating Digital:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error updating Digital:", error);
-    } finally {
-      setLoading(false);
     }
   };
 

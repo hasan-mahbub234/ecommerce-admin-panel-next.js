@@ -1,4 +1,3 @@
-// context/AuthContext.js
 "use client";
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
@@ -11,6 +10,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [globalModal, setGlobalModal] = useState({
@@ -19,12 +19,51 @@ export const AuthProvider = ({ children }) => {
   });
   const router = useRouter();
 
+  // Check if token is expired
+  const isTokenExpired = (token) => {
+    if (!token) return true;
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.exp * 1000 < Date.now();
+    } catch (e) {
+      return true;
+    }
+  };
+
+  // Set up axios interceptor
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          logout();
+          toast.error("Session expired. Please login again.");
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, [router]);
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
+    const storedToken = localStorage.getItem("token");
 
-    if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
+    if (storedUser && storedToken) {
+      if (isTokenExpired(storedToken)) {
+        logout();
+      } else {
+        setUser(JSON.parse(storedUser));
+        setToken(storedToken);
+
+        // Set the token in axios headers
+        // axios.defaults.headers.common[
+        //   "Authorization"
+        // ] = `Bearer ${storedToken}`;
+      }
     }
     setLoading(false);
   }, []);
@@ -44,8 +83,13 @@ export const AuthProvider = ({ children }) => {
         const token = response.data.access_token;
 
         setUser(userData);
+        setToken(token);
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(userData));
+
+        // Set the token in axios headers
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
         toast.success("Login successful!");
         router.push("/");
       }
@@ -57,14 +101,22 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
+    setToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+
+    // Remove the token from axios headers
+    delete axios.defaults.headers.common["Authorization"];
+
+    // Redirect to login page
+    router.push("/login");
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        token,
         login,
         logout,
         loading,

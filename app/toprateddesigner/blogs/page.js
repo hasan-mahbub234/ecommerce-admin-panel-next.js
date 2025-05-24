@@ -2,6 +2,7 @@
 import ActionColumn from "@/components/ActionColumn";
 import AddBlog from "@/components/Blogs/AddBlog";
 import UpdateBlog from "@/components/Blogs/UpdateBlog";
+import { useAuth } from "@/context/AuthContext";
 import { deleteBlog } from "@/functions/AllDeleteApis";
 import { getBlogs } from "@/functions/AllGetApis";
 import { createBlog } from "@/functions/AllPostApis";
@@ -17,6 +18,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function Blog() {
+  const { token } = useAuth();
   const [blogs, setBlogs] = useState(null);
   const [blog, setBlog] = useState({
     title: "",
@@ -48,14 +50,18 @@ export default function Blog() {
   };
 
   const handleDeleteBlog = async (id) => {
-    try {
-      const result = await deleteBlog(id); // Wait for deletion to complete
-      if (result.status === 204) {
-        fetchBlogs();
+    if (token) {
+      try {
+        const result = await deleteBlog(id, token); // Wait for deletion to complete
+        if (result.status === 204) {
+          fetchBlogs();
+        }
+        // Then refresh the list
+      } catch (error) {
+        console.error("Error deleting blog:", error);
       }
-      // Then refresh the list
-    } catch (error) {
-      console.error("Error deleting blog:", error);
+    } else {
+      window.alert("Please Login!");
     }
   };
   useEffect(() => {
@@ -183,40 +189,50 @@ export default function Blog() {
       const cleanedImages = blog.images.filter((img) => img !== "");
       const cleanedBlog = { ...blog, images: cleanedImages };
       console.log(cleanedBlog.images);
-      try {
-        setAddLoading(true);
-        const formData = new FormData();
-        formData.append("title", cleanedBlog.title);
-        formData.append("slug", cleanedBlog.slug);
-        formData.append("summary", cleanedBlog.summary);
-        formData.append("content", cleanedBlog.content);
-        formData.append("author", cleanedBlog.author);
-        formData.append("keywords", cleanedBlog.keywords);
-        cleanedBlog.images
-          .filter((img) => img instanceof File)
-          .forEach((file, index) => {
-            formData.append("images_files", file);
-          });
+      if (token) {
+        try {
+          setAddLoading(true);
+          const formData = new FormData();
+          formData.append("title", cleanedBlog.title);
+          formData.append("slug", cleanedBlog.slug);
+          formData.append("summary", cleanedBlog.summary);
+          formData.append("content", cleanedBlog.content);
+          formData.append("author", cleanedBlog.author);
+          formData.append("keywords", cleanedBlog.keywords);
+          cleanedBlog.images
+            .filter((img) => img instanceof File)
+            .forEach((file, index) => {
+              formData.append("images_files", file);
+            });
 
-        const response = await axios.post(`${BASE_LOCAL_URL}/blogs`, formData);
-        console.log(response);
-        if (response.status === 201) {
-          setBlog({
-            title: "",
-            slug: "",
-            summary: "",
-            content: "",
-            keywords: [],
-            author: "",
-            images: [],
-          });
-          setAdd(false);
-          fetchBlogs();
+          const response = await axios.post(
+            `${BASE_LOCAL_URL}/blogs`,
+            formData,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          console.log(response);
+          if (response.status === 201) {
+            setBlog({
+              title: "",
+              slug: "",
+              summary: "",
+              content: "",
+              keywords: [],
+              author: "",
+              images: [],
+            });
+            setAdd(false);
+            fetchBlogs();
+          }
+        } catch (error) {
+          console.error("Error adding blog:", error);
+        } finally {
+          setAddLoading(false);
         }
-      } catch (error) {
-        console.error("Error adding blog:", error);
-      } finally {
-        setAddLoading(false);
+      } else {
+        window.alert("Please Login!");
       }
     } else {
       console.error("Image or name is missing");

@@ -6,8 +6,11 @@ import ImageInput from "@/utils/ImageInput";
 import Input from "@/utils/Input";
 import { BASE_LOCAL_URL } from "@/functions/apiService";
 import Loader from "@/utils/Loader";
+import { useAuth } from "@/context/AuthContext";
+import axios from "axios";
 
 export default function UpdateExpert({ setUpdate, expert, fetchExpert }) {
+  const { token } = useAuth();
   const [updateExpert, setUpdateExpert] = useState({
     name: expert.name,
     type: expert.type,
@@ -22,38 +25,46 @@ export default function UpdateExpert({ setUpdate, expert, fetchExpert }) {
       console.error("name is required");
       return;
     }
-
-    try {
-      setLoading(true);
-      const formData = new FormData();
-      formData.append("name", updateExpert.name);
-      formData.append("type", updateExpert.type);
-      formData.append("exp", updateExpert.exp);
-      formData.append("technology", updateExpert.technology);
-      formData.append("image", updateExpert.image);
-
-      if (updateExpert.image && updateExpert.image !== updateExpert.image) {
+    if (token) {
+      try {
+        setLoading(true);
+        const formData = new FormData();
+        formData.append("name", updateExpert.name);
+        formData.append("type", updateExpert.type);
+        formData.append("exp", updateExpert.exp);
+        formData.append("technology", updateExpert.technology);
         formData.append("image", updateExpert.image);
+
+        if (updateExpert.image && updateExpert.image !== updateExpert.image) {
+          formData.append("image", updateExpert.image);
+        }
+
+        const response = await axios.patch(
+          `${BASE_LOCAL_URL}/experts/${expert.uid}/`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const text = await response.text();
+        const result = text ? JSON.parse(text) : {};
+
+        if (response.ok) {
+          fetchExpert();
+          setUpdate(false);
+        } else {
+          console.error("Update failed:", result);
+        }
+      } catch (error) {
+        console.error("Error updating Expert:", error);
+      } finally {
+        setLoading(false);
       }
-
-      const response = await fetch(`${BASE_LOCAL_URL}/experts/${expert.uid}/`, {
-        method: "PATCH",
-        body: formData,
-      });
-
-      const text = await response.text();
-      const result = text ? JSON.parse(text) : {};
-
-      if (response.ok) {
-        fetchExpert();
-        setUpdate(false);
-      } else {
-        console.error("Update failed:", result);
-      }
-    } catch (error) {
-      console.error("Error updating Expert:", error);
-    } finally {
-      setLoading(false);
+    } else {
+      window.alert("Please Login!");
     }
   };
 

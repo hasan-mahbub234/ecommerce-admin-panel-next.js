@@ -11,9 +11,10 @@ import SelectInput from "@/utils/SelectInput";
 import axios from "axios";
 import VideoInput from "@/utils/VideoInput";
 import Loader from "@/utils/Loader";
+import { useAuth } from "@/context/AuthContext";
 
 function UpdateProduct({ setUpdate, product, fetchProducts }) {
-  const token = localStorage.getItem("token");
+  const { token } = useAuth();
   const [updatedProduct, setUpdatedProduct] = useState({
     name: product.name,
     quantity: product.quantity,
@@ -53,73 +54,75 @@ function UpdateProduct({ setUpdate, product, fetchProducts }) {
   }, []);
 
   const handleUpdate = async () => {
-    setLoading(true);
-    try {
-      const cleanedImages = updatedProduct.images.filter((img) => img !== "");
-      const cleanedProduct = { ...updatedProduct, images: cleanedImages };
-      const formData = new FormData();
-      // console.log(cleanedProduct.video_file);
+    if (token) {
+      setLoading(true);
+      try {
+        const cleanedImages = updatedProduct.images.filter((img) => img !== "");
+        const cleanedProduct = { ...updatedProduct, images: cleanedImages };
+        const formData = new FormData();
+        // console.log(cleanedProduct.video_file);
 
-      // Basic fields
-      formData.append("name", cleanedProduct.name);
-      formData.append("quantity", cleanedProduct.quantity);
-      formData.append("description", cleanedProduct.description);
-      formData.append("price", cleanedProduct.price);
-      formData.append("category", cleanedProduct.category);
-      formData.append("category_id", cleanedProduct.category_id);
-      formData.append("brand", cleanedProduct.brand);
-      formData.append("age", cleanedProduct.age);
-      formData.append("discount", cleanedProduct.discount);
-      formData.append("size", cleanedProduct.size.join(","));
-      formData.append("weight", cleanedProduct.weight.join(","));
-      formData.append("color", cleanedProduct.color.join(","));
-      formData.append("tags", cleanedProduct.tags.join(","));
-      formData.append("best_selling", cleanedProduct.best_selling);
-      if (cleanedProduct.video_file !== "" && cleanedProduct.video_file) {
-        formData.append("video_file", cleanedProduct.video_file);
-      }
-
-      // ✅ Append primary_image only if it's a File
-      if (cleanedProduct.primary_image instanceof File) {
-        formData.append("primary_image", cleanedProduct.primary_image);
-      }
-
-      // ✅ Separate images: keep only new File objects
-      const newImageFiles = cleanedProduct.images.filter(
-        (img) => img instanceof File
-      );
-
-      // Append new images if any
-      newImageFiles.forEach((file) => {
-        formData.append("images", file);
-      });
-      //formData.append("images", newImageFiles);
-      //  console.log(formData);
-
-      const response = await fetch(
-        `${BASE_LOCAL_URL}/products/${product.uid}/`,
-        {
-          method: "PATCH",
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        // Basic fields
+        formData.append("name", cleanedProduct.name);
+        formData.append("quantity", cleanedProduct.quantity);
+        formData.append("description", cleanedProduct.description);
+        formData.append("price", cleanedProduct.price);
+        formData.append("category", cleanedProduct.category);
+        formData.append("category_id", cleanedProduct.category_id);
+        formData.append("brand", cleanedProduct.brand);
+        formData.append("age", cleanedProduct.age);
+        formData.append("discount", cleanedProduct.discount);
+        formData.append("size", cleanedProduct.size.join(","));
+        formData.append("weight", cleanedProduct.weight.join(","));
+        formData.append("color", cleanedProduct.color.join(","));
+        formData.append("tags", cleanedProduct.tags.join(","));
+        formData.append("best_selling", cleanedProduct.best_selling);
+        if (cleanedProduct.video_file !== "" && cleanedProduct.video_file) {
+          formData.append("video_file", cleanedProduct.video_file);
         }
-      );
 
-      const text = await response.text();
-      const result = text ? JSON.parse(text) : {};
+        // ✅ Append primary_image only if it's a File
+        if (cleanedProduct.primary_image instanceof File) {
+          formData.append("primary_image", cleanedProduct.primary_image);
+        }
 
-      if (response.ok) {
-        setUpdate(false);
-        fetchProducts();
-      } else {
-        console.error("Update failed:", result);
+        // ✅ Separate images: keep only new File objects
+        const newImageFiles = cleanedProduct.images.filter(
+          (img) => img instanceof File
+        );
+
+        // Append new images if any
+        newImageFiles.forEach((file) => {
+          formData.append("images", file);
+        });
+        //formData.append("images", newImageFiles);
+        //  console.log(formData);
+
+        const response = await fetch(
+          `${BASE_LOCAL_URL}/products/${product.uid}/`,
+          {
+            method: "PATCH",
+            body: formData,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const text = await response.text();
+        const result = text ? JSON.parse(text) : {};
+
+        if (response.ok) {
+          setUpdate(false);
+          fetchProducts();
+        } else {
+          console.error("Update failed:", result);
+        }
+      } catch (error) {
+        console.error("Error updating Product:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error updating Product:", error);
-    } finally {
-      setLoading(false);
     }
   };
 

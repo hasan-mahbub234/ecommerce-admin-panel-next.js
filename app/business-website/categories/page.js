@@ -2,6 +2,7 @@
 import ActionColumn from "@/components/ActionColumn";
 import AddCategory from "@/components/category/AddCategory";
 import UpdateCategory from "@/components/category/UpdateCategory";
+import { useAuth } from "@/context/AuthContext";
 import { deleteCategory } from "@/functions/AllDeleteApis";
 import { BASE_LOCAL_URL } from "@/functions/apiService";
 import Button from "@/utils/Button";
@@ -12,7 +13,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function Categories() {
-  const token = localStorage.getItem("token");
   const [categories, setCategories] = useState(null);
   const [category, setcategory] = useState({
     name: "",
@@ -23,6 +23,7 @@ export default function Categories() {
   const [loading, setLoading] = useState(false);
   const [addloading, setAddLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState(new Set());
+  const { token } = useAuth();
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -38,13 +39,15 @@ export default function Categories() {
   };
 
   const handleDeleteCategory = async (id) => {
-    try {
-      const result = await deleteCategory(id, token);
-      if (result.status === 204) {
-        fetchCategories();
+    if (token) {
+      try {
+        const result = await deleteCategory(id, token);
+        if (result.status === 204) {
+          fetchCategories();
+        }
+      } catch (error) {
+        console.error("Error deleting Category:", error);
       }
-    } catch (error) {
-      console.error("Error deleting Category:", error);
     }
   };
 
